@@ -1,11 +1,16 @@
 import fastify from "fastify";
 import cors from "@fastify/cors";
 import dotenv from "dotenv";
+import { createClient } from "@supabase/supabase-js";
 
 // Load environment variables from .env file
 dotenv.config();
 
 const BASE_URL: string = process.env.BASE_URL as string;
+const SUPABASE_URL: string = process.env.SUPABASE_URL as string;
+const SUPABASE_KEY: string = process.env.SUPABASE_KEY as string;
+
+export const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
 
 const server = fastify();
 
