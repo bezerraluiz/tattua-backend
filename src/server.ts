@@ -30,7 +30,7 @@ server.route({
       },
     },
   },
-  handler: function (request, reply) {
+  handler: function (req, reply) {
     reply.send({ hello: "world" });
   },
 });
