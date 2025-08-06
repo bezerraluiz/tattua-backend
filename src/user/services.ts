@@ -1,13 +1,19 @@
 import { supabase } from "server";
 import { CreateUserReqDto } from "./dtos/create-user-req.dto";
 
-export const GetUsers = async () => {
+export interface GetUsers {
+    data: [];
+    status: number;
+    statusText: string;
+}
+
+export const GetUsers = async ():Promise<GetUsers | void> => {
     const { data, error } = await supabase
         .from('users')
         .select();
 };
 
-export const CreateUser = async (user: CreateUserReqDto) => {
+export const CreateUser = async (user: CreateUserReqDto): Promise<object | void> => {
     const { error } = await supabase
         .from('users')
         .insert({
@@ -17,6 +23,6 @@ export const CreateUser = async (user: CreateUserReqDto) => {
             password: user.password,
             valueCm: user.valueCm,
             valueNeedle: user.valueNeedle,
-            addressId: user.addressId,
+            addressUid: user.addressUid,
         })
 };

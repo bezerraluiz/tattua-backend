@@ -6,5 +6,5 @@ export interface User {
     password: string;
     valueCm: string;
     valueNeedle: string;
-    addressId: number; 
+    addressUid: string; 
 }
