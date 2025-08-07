@@ -3,39 +3,41 @@ import { CreateUser, GetUsers } from "./services";
 import { BodyCreateUserSchema } from "./schemas/create-user.schema";
 import { CreateUserReqDto } from "./dtos/create-user-req.dto";
 
-export const GetUsersHandler = async (req: FastifyRequest, reply: FastifyReply) => {
-    const response = await GetUsers();
+export const GetUsersHandler = async (
+  req: FastifyRequest,
+  reply: FastifyReply
+) => {
+  const response = await GetUsers();
 
-    if (!response) throw reply.status(404).send({
-        error: true, message: "Nenhum usuário registrado"
+  if (!response)
+    throw reply.status(404).send({
+      error: true,
+      message: "Nenhum usuário registrado",
     });
 
-    return reply.status(200).send({error: false, ...response.data})
+  return reply.status(200).send({ error: false, ...response.data });
 };
 
-export const CreateUserHandler = async (req: FastifyRequest, reply: FastifyReply) => {
-    const body  = BodyCreateUserSchema.parse(req.body);
-    
-    // Gerar uid do endereço
-    const addressUid = "";
+export const CreateUserHandler = async (
+  req: FastifyRequest,
+  reply: FastifyReply
+) => {
+  const body = BodyCreateUserSchema.parse(req.body);
 
-    // Criação do endereço
+  // Gerar uid do endereço
+  const addressId = 0;
 
-    // Gerar uid do user
-    const userUid = "";
+  // Criação do endereço
 
-    // Hash da password
-    const passwordHash = "";
+  // Hash da password
+  const passwordHash = "";
 
-    const user: CreateUserReqDto = {
-        uid: userUid,
-        studioName: body.studioName,
-        cpfcnpj: body.cpfcnpj,
-        password: body.password,
-        valueCm: body.valueCm,
-        valueNeedle: body.valueNeedle,
-        addressUid: addressUid
-    }
+  const user: CreateUserReqDto = {
+    studioName: body.studioName,
+    cpfcnpj: body.cpfcnpj,
+    password: body.password,
+    addressId: addressId,
+  };
 
-    const response = await CreateUser(user);
+  const response = await CreateUser(user);
 };
