@@ -7,15 +7,23 @@ export const GetUsersHandler = async (
   req: FastifyRequest,
   reply: FastifyReply
 ) => {
-  const response = await GetUsers();
+  try {
+    const response = await GetUsers();
 
-  if (!response)
-    throw reply.status(404).send({
-      error: true,
-      message: "Nenhum usuário registrado",
-    });
+    if (!response)
+      throw reply.status(404).send({
+        error: true,
+        message: "Nenhum usuário registrado",
+      });
+  
+    return reply.status(200).send({ error: false, ...response });  
+  } catch (error) {
+    // TODO Tratamento de erro
+    
+    if (error instanceof class) {
 
-  return reply.status(200).send({ error: false, ...response });
+    }
+  }
 };
 
 export const CreateUserHandler = async (
