@@ -2,11 +2,11 @@ import fastify from "fastify";
 import cors from "@fastify/cors";
 import dotenv from "dotenv";
 import { createClient } from "@supabase/supabase-js";
+import { UserRoutes } from "routes/user-routes";
 
 // Load environment variables from .env file
 dotenv.config();
 
-const BASE_URL: string = process.env.BASE_URL as string;
 const SUPABASE_URL: string = process.env.SUPABASE_URL as string;
 const SUPABASE_KEY: string = process.env.SUPABASE_KEY as string;
 
@@ -19,13 +19,13 @@ server.register(cors, { origin: true }); // Enable CORS for all origins
 // Route for testing
 server.route({
   method: "GET",
-  url: BASE_URL,
+  url: "/",
   schema: {
     response: {
       200: {
         type: "object",
         properties: {
-          hello: "string",
+          hello: { type: "string" },
         },
       },
     },
@@ -34,6 +34,9 @@ server.route({
     reply.send({ hello: "world" });
   },
 });
+
+// Routes
+server.register(UserRoutes);
 
 server.listen({ host: "0.0.0.0", port: 3333 }).then(() => {
   console.debug("Server is running on localhost:3333 🚀");

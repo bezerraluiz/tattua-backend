@@ -90,7 +90,6 @@ npm install
 
 3. Configure as variáveis de ambiente criando um arquivo `.env`:
 ```env
-BASE_URL=http://localhost:3333
 JWT_SECRET=seu_jwt_secret_aqui
 SUPABASE_URL=sua_url_do_supabase
 SUPABASE_KEY=sua_chave_do_supabase

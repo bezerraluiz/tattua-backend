@@ -15,7 +15,7 @@ export const GetUsersHandler = async (
       message: "Nenhum usuário registrado",
     });
 
-  return reply.status(200).send({ error: false, ...response.data });
+  return reply.status(200).send({ error: false, ...response });
 };
 
 export const CreateUserHandler = async (
@@ -24,10 +24,10 @@ export const CreateUserHandler = async (
 ) => {
   const body = BodyCreateUserSchema.parse(req.body);
 
-  // Gerar uid do endereço
-  const addressId = 0;
-
   // Criação do endereço
+
+  // Pegar id do endereço
+  const addressId = 0;
 
   // Hash da password
   const passwordHash = "";
