@@ -16,7 +16,7 @@ export const CreateUser = async (
 ): Promise<object | void> => {
   const { error } = await supabase.from("users").insert({
     studioName: user.studioName,
-    cpfcnpj: user.cpfcnpj,
+    taxId: user.taxId,
     password: user.password,
     addressId: user.addressId,
   });

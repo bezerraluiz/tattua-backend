@@ -34,7 +34,7 @@ export const CreateUserHandler = async (
 
   const user: CreateUserReqDto = {
     studioName: body.studioName,
-    cpfcnpj: body.cpfcnpj,
+    taxId: body.taxId,
     password: body.password,
     addressId: addressId,
   };
