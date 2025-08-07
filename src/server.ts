@@ -2,7 +2,7 @@ import fastify from "fastify";
 import cors from "@fastify/cors";
 import dotenv from "dotenv";
 import { createClient } from "@supabase/supabase-js";
-import { UserRoutes } from "routes/user-routes";
+import { UserRoutes } from "routes/user.routes";
 
 // Load environment variables from .env file
 dotenv.config();

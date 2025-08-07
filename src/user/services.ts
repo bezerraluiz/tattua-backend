@@ -1,5 +1,6 @@
 import { supabase } from "server";
 import { CreateUserReqDto } from "./dtos/create-user-req.dto";
+import { UserNotFoundError } from "errors/user-not-found.error";
 
 interface GetUsers {
   data: [];
@@ -10,9 +11,10 @@ interface GetUsers {
 export const GetUsers = async (): Promise<any[] | void> => {
   const { data, error } = await supabase.from("users").select();
 
-  // TODO tratamento de erros
-
   if (error) throw new Error(error.message);
+
+  // TODO tratamento de erros
+  if (!data) throw new UserNotFoundError("Nenhum usuário encontrado")
 
   return data;
 };
