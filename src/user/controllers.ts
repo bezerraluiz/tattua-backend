@@ -2,6 +2,7 @@ import { FastifyReply, FastifyRequest } from "fastify";
 import { CreateUser, GetUsers } from "./services";
 import { BodyCreateUserSchema } from "./schemas/create-user.schema";
 import { CreateUserReqDto } from "./dtos/create-user-req.dto";
+import { UserNotFoundError } from "errors/user-not-found.error";
 
 export const GetUsersHandler = async (
   req: FastifyRequest,
@@ -15,13 +16,16 @@ export const GetUsersHandler = async (
         error: true,
         message: "Nenhum usuário registrado",
       });
-  
-    return reply.status(200).send({ error: false, ...response });  
-  } catch (error) {
-    // TODO Tratamento de erro
-    
-    if (error instanceof class) {
 
+    return reply.status(200).send({ error: false, ...response });
+  } catch (error) {
+    if (error instanceof UserNotFoundError) {
+      throw reply.status(404).send({ error: true, message: error.message });
+    } else {
+      console.error("Error: ", error);
+      throw reply
+        .status(500)
+        .send({ error: true, message: "Internal Server Error" });
     }
   }
 };

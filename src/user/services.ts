@@ -14,7 +14,7 @@ export const GetUsers = async (): Promise<any[] | void> => {
 
   if (error) throw new Error(error.message);
 
-  if (!data) throw new UserNotFoundError("Nenhum usuário encontrado");
+  if (!data) throw new UserNotFoundError("No users found");
 
   return data;
 };
@@ -31,7 +31,7 @@ export const CreateUser = async (
 
   if (error) throw new Error(error.message);
 
-  if (!data) throw new UserAlreadyExists("Usuário já cadastrado");
+  if (!data) throw new UserAlreadyExists("User already registered");
 
   return data
 };
