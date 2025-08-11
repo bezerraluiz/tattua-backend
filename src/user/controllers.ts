@@ -5,6 +5,7 @@ import { CreateUserReqDto } from "./dtos/create-user-req.dto";
 import { UserNotFoundError } from "errors/user-not-found.error";
 import { CreateAddress } from "address/services";
 import { UserAlreadyExists } from "errors/user-already-exists.error";
+import { hashPassword } from "utils/bcrypt";
 
 export const GetUsersHandler = async (
   req: FastifyRequest,
@@ -62,25 +63,28 @@ export const CreateUserHandler = async (
     if (!address)
       throw reply.status(500).send({ error: true, message: "Failed to create address" });
 
-    // Pegar id do endereço
+    // Get id address
     const addressId = address.id;
 
-    // Hash da password
-    const passwordHash = "";
+    // Hashing password
+    const passwordBody = body.password;
+    const passwordHash = await hashPassword(passwordBody);
 
-    const user: CreateUserReqDto = {
+    // Creating user body
+    const userBody: CreateUserReqDto = {
       studioName: body.studioName.trim(),
       email: body.email.trim(),
       taxId: body.taxId.trim(),
-      password: body.password.trim(),
+      password: passwordHash.trim(),
       addressId: addressId,
     };
 
-    const response = await CreateUser(user);
+    // Inser user in database
+    const user = await CreateUser(userBody);
 
-		if (!response) throw reply.status(400).send({ error: true, message: "User creation failed" });
+		if (!user) throw reply.status(400).send({ error: true, message: "User creation failed" });
   
-		return reply.status(201).send({ error: false, message: response });
+		return reply.status(201).send({ error: false, message: user });
 	} catch (error) {	
     if (error instanceof UserAlreadyExists) {
       throw reply.status(404).send({ error: true, message: error.message });
