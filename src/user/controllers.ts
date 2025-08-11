@@ -1,8 +1,10 @@
 import { FastifyReply, FastifyRequest } from "fastify";
-import { CreateUser, GetUsers } from "./services";
+import { CreateUser, GetUserByCpfcnpj, GetUsers } from "./services";
 import { BodyCreateUserSchema } from "./schemas/create-user.schema";
 import { CreateUserReqDto } from "./dtos/create-user-req.dto";
 import { UserNotFoundError } from "errors/user-not-found.error";
+import { CreateAddress } from "address/services";
+import { UserAlreadyExists } from "errors/user-already-exists.error";
 
 export const GetUsersHandler = async (
   req: FastifyRequest,
@@ -14,7 +16,7 @@ export const GetUsersHandler = async (
     if (!response)
       throw reply.status(404).send({
         error: true,
-        message: "Nenhum usuário registrado",
+        message: "No users found",
       });
 
     return reply.status(200).send({ error: false, ...response });
@@ -34,22 +36,59 @@ export const CreateUserHandler = async (
   req: FastifyRequest,
   reply: FastifyReply
 ) => {
-  const body = BodyCreateUserSchema.parse(req.body);
+  try {
+    const body = BodyCreateUserSchema.parse(req.body);
 
-  // Criação do endereço
+		// Verify if user already exists
+		const existingUser = await GetUserByCpfcnpj(body.taxId);
 
-  // Pegar id do endereço
-  const addressId = 0;
+		if (existingUser) 
+			throw reply.status(400).send({ error: true, message: "User already exists" });
+		
+    // Creating addess body
+    const addressBody = {
+      country: body.country.trim(),
+      street: body.street.trim(),
+      number: body.number.trim(),
+      complement: body.complement ? body.complement.trim() : "",
+      city: body.city.trim(),
+      state: body.state.trim(),
+      zipCode: body.zipCode.trim(),
+    };
 
-  // Hash da password
-  const passwordHash = "";
+    // Insert address in database
+    const address = await CreateAddress(addressBody);
 
-  const user: CreateUserReqDto = {
-    studioName: body.studioName,
-    taxId: body.taxId,
-    password: body.password,
-    addressId: addressId,
-  };
+    if (!address)
+      throw reply.status(500).send({ error: true, message: "Failed to create address" });
 
-  const response = await CreateUser(user);
+    // Pegar id do endereço
+    const addressId = address.id;
+
+    // Hash da password
+    const passwordHash = "";
+
+    const user: CreateUserReqDto = {
+      studioName: body.studioName.trim(),
+      email: body.email.trim(),
+      taxId: body.taxId.trim(),
+      password: body.password.trim(),
+      addressId: addressId,
+    };
+
+    const response = await CreateUser(user);
+
+		if (!response) throw reply.status(400).send({ error: true, message: "User creation failed" });
+  
+		return reply.status(201).send({ error: false, message: response });
+	} catch (error) {	
+    if (error instanceof UserAlreadyExists) {
+      throw reply.status(404).send({ error: true, message: error.message });
+    } else {
+      console.error("Error: ", error);
+      throw reply
+        .status(500)
+        .send({ error: true, message: "Internal Server Error" });
+    }
+  }
 };

@@ -2,6 +2,7 @@ export interface User {
   id: number;
   uid: string;
   studioName: string;
+  email: string;
   taxId: string;
   password: string;
   pricePerCm?: string;

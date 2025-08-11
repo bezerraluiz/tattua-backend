@@ -26,8 +26,6 @@ export const CreateAddress = async (
     ...address,
   });
 
-  // TODO tratamento de erro
-
   if (error) throw new Error(error.message);
 
   return data;

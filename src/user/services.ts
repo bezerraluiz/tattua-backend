@@ -28,7 +28,7 @@ export const GetUserByCpfcnpj = async (tax_id: string) => {
 
   if (error) throw new Error(error.message);
 
-  
+  if (!data) throw new UserNotFoundError("No users found");
 
   return data;
 };
