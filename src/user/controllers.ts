@@ -12,15 +12,9 @@ export const GetUsersHandler = async (
   reply: FastifyReply
 ) => {
   try {
-    const response = await GetUsers();
+    const users = await GetUsers();
 
-    if (!response)
-      throw reply.status(404).send({
-        error: true,
-        message: "No users found",
-      });
-
-    return reply.status(200).send({ error: false, ...response });
+    return reply.status(200).send({ error: false, ...users });
   } catch (error) {
     if (error instanceof UserNotFoundError) {
       throw reply.status(404).send({ error: true, message: error.message });
@@ -41,11 +35,8 @@ export const CreateUserHandler = async (
     const body = BodyCreateUserSchema.parse(req.body);
 
 		// Verify if user already exists
-		const existingUser = await GetUserByCpfcnpj(body.taxId);
+		await GetUserByCpfcnpj(body.taxId);
 
-		if (existingUser) 
-			throw reply.status(400).send({ error: true, message: "User already exists" });
-		
     // Creating addess body
     const addressBody = {
       country: body.country.trim(),

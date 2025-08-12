@@ -16,7 +16,7 @@ export const GetUsers = async (): Promise<User[]> => {
 
   if (error) throw new Error(error.message);
 
-  if (!data) throw new UserNotFoundError("No users found");
+  if (data.length == 0) throw new UserNotFoundError("No users found");
 
   return data;
 };
@@ -29,7 +29,7 @@ export const GetUserByCpfcnpj = async (tax_id: string) => {
 
   if (error) throw new Error(error.message);
 
-  if (!data) throw new UserNotFoundError("No users found");
+  if (data.length != 0) throw new UserAlreadyExists("User already exists");
 
   return data;
 };

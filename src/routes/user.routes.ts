@@ -1,6 +1,7 @@
 import { FastifyInstance } from "fastify";
-import { GetUsers } from "user/services";
+import { CreateUserHandler, GetUsersHandler } from "user/controllers";
 
 export const UserRoutes = async (server: FastifyInstance) => {
-  server.get("/api/v1/users", GetUsers);
+  server.get("/api/v1/users", GetUsersHandler);
+  server.post("/api/v1/users", CreateUserHandler);
 };
