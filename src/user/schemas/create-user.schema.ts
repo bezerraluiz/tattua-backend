@@ -5,8 +5,6 @@ export const BodyCreateUserSchema = z.object({
   email: z.email(),
   taxId: z.string(),
   password: z.string(),
-  pricePerCm: z.string(),
-  pricePerNeedle: z.string(),
   country: z.string(),
   street: z.string(),
   number: z.string(),

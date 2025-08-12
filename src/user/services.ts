@@ -3,6 +3,7 @@ import { CreateUserReqDto } from "./dtos/create-user-req.dto";
 import { UserNotFoundError } from "errors/user-not-found.error";
 import { UserAlreadyExists } from "errors/user-already-exists.error";
 import { User } from "./user.model";
+import type { UpdateUserReqDto } from "./dtos/update-user-req.dto";
 
 interface GetUsers {
   data: [];
@@ -49,3 +50,23 @@ export const CreateUser = async (
 
   return data;
 };
+
+export const UpdateUser = async (user: UpdateUserReqDto) => {
+  const { data, error } = await supabase
+    .from("users")
+    .update({
+      studioName: user.studioName,
+      email: user.email,
+      password: user.password,
+    })
+    .eq('id', user.id)
+    .select();
+
+    if (error) throw new Error(error.message);
+
+    if (!data) throw new UserNotFoundError("Not users found");
+
+    return data;
+};
+
+export const DeleteUser = async () => {};
