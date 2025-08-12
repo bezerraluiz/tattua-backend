@@ -2,6 +2,7 @@ import { AddressNotFoundError } from "errors/address-not-found.error";
 import { supabase } from "server";
 import { CreateAddressReqDto } from "./dtos/create-address-req.dto";
 import { Address } from "./adress.model";
+import { AddressCreatingError } from "errors/address-creating.error";
 
 interface GetAddresses {
   data: [];
@@ -26,7 +27,7 @@ export const CreateAddress = async (
     ...address,
   });
 
-  if (error) throw new Error(error.message);
+  if (error) throw new AddressCreatingError("Failed to create address");
 
   return data;
 };

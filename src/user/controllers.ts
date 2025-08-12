@@ -6,6 +6,7 @@ import { UserNotFoundError } from "errors/user-not-found.error";
 import { CreateAddress } from "address/services";
 import { UserAlreadyExists } from "errors/user-already-exists.error";
 import { hashPassword } from "utils/bcrypt";
+import { AddressCreatingError } from "errors/address-creating.error";
 
 export const GetUsersHandler = async (
   req: FastifyRequest,
@@ -37,7 +38,7 @@ export const CreateUserHandler = async (
 		// Verify if user already exists
 		await GetUserByCpfcnpj(body.taxId);
 
-    // Creating addess body
+    // Creating address body
     const addressBody = {
       country: body.country.trim(),
       street: body.street.trim(),
@@ -52,7 +53,7 @@ export const CreateUserHandler = async (
     const address = await CreateAddress(addressBody);
 
     if (!address)
-      throw reply.status(500).send({ error: true, message: "Failed to create address" });
+      return;
 
     // Get id address
     const addressId = address.id;
@@ -79,6 +80,8 @@ export const CreateUserHandler = async (
 	} catch (error) {	
     if (error instanceof UserAlreadyExists) {
       throw reply.status(404).send({ error: true, message: error.message });
+    } else if (error instanceof AddressCreatingError) {
+        throw reply.status(400).send({ error: true, message: error.message });
     } else {
       console.error("Error: ", error);
       throw reply
