@@ -51,6 +51,7 @@ export const CreateUser = async (
   return data;
 };
 
+// TODO UpdateUser
 export const UpdateUser = async (user: UpdateUserReqDto) => {
   const { data, error } = await supabase
     .from("users")
@@ -69,4 +70,7 @@ export const UpdateUser = async (user: UpdateUserReqDto) => {
     return data;
 };
 
+// TODO DeleteUser
 export const DeleteUser = async () => {};
+
+// TODO CreateUserAuth

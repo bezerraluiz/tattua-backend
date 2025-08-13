@@ -22,10 +22,10 @@ export const GetAddresses = async (): Promise<Address[]> => {
 
 export const CreateAddress = async (
   address: CreateAddressReqDto
-): Promise<Address | null> => {
-  const { data, error } = await supabase.from("adresses").insert({
+): Promise<Address> => {
+  const { data, error } = await supabase.from("addresses").insert({
     ...address,
-  });
+  }).select().single();
 
   if (error) throw new AddressCreatingError("Failed to create address");
 

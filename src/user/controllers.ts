@@ -38,6 +38,8 @@ export const CreateUserHandler = async (
 		// Verify if user already exists
 		await GetUserByCpfcnpj(body.taxId);
 
+    // TODO Service to create user in supabase auth
+
     // Creating address body
     const addressBody = {
       country: body.country.trim(),
@@ -49,8 +51,12 @@ export const CreateUserHandler = async (
       zipCode: body.zipCode.trim(),
     };
 
+    console.debug("Address body prepared:", JSON.stringify(addressBody));
+
     // Insert address in database
     const address = await CreateAddress(addressBody);
+
+    console.debug("Address successfully created:", JSON.stringify(address));
 
     if (!address)
       return;
@@ -71,8 +77,12 @@ export const CreateUserHandler = async (
       addressId: addressId,
     };
 
+    console.debug("User body prepared:", JSON.stringify(userBody));
+
     // Inser user in database
     const user = await CreateUser(userBody);
+
+    console.debug("User successfully created:", JSON.stringify(user));
 
 		if (!user) throw reply.status(400).send({ error: true, message: "User creation failed" });
   
