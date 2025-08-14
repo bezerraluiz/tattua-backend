@@ -7,8 +7,8 @@ import { UserRoutes } from "routes/user.routes";
 // Load environment variables from .env file
 dotenv.config();
 
-const SUPABASE_URL: string = process.env.SUPABASE_URL as string;
-const SUPABASE_KEY: string = process.env.SUPABASE_KEY as string;
+export const SUPABASE_URL: string = process.env.SUPABASE_URL as string;
+export const SUPABASE_KEY: string = process.env.SUPABASE_KEY as string;
 
 export const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
 

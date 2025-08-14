@@ -11,6 +11,9 @@ import { UserNotFoundError } from "errors/user-not-found.error";
 import { CreateAddress } from "address/services";
 import { UserAlreadyExists } from "errors/user-already-exists.error";
 import { AddressCreatingError } from "errors/address-creating.error";
+import { generateJwtToken } from "utils/jwt-generate";
+import { createClient } from "@supabase/supabase-js";
+import { SUPABASE_KEY, SUPABASE_URL } from "server";
 
 export const GetUsersHandler = async (
   req: FastifyRequest,
@@ -84,17 +87,6 @@ export const CreateUserHandler = async (
       throw reply
         .status(400)
         .send({ error: true, message: "User creation failed" });
-
-    // Creating user auth body
-    const userAuthBody = {
-      email: body.email.trim(),
-      password: body.password.trim(),
-      studioName: body.studioName.trim(),
-      taxId: body.taxId.trim(),
-    };
-
-    // Insert user authentication data into the database
-    await CreateUserAuth(userAuthBody);
 
     return reply.status(201).send({ error: false, message: user });
   } catch (error) {
