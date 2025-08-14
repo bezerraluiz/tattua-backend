@@ -87,8 +87,7 @@ export const CreateUserAuth = async (user: CreateUserAuthReqDto) => {
   });
 
   if (error) {
-    console.error("Supabase Auth error:", error);
-    throw new Error(`Authentication failed: ${error.message}`);
+    throw new Error(error.message);
   }
 
   return data;

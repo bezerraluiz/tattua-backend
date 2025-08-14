@@ -1,5 +1,10 @@
 import { FastifyReply, FastifyRequest } from "fastify";
-import { CreateUser, GetUserByCpfcnpj, GetUsers } from "./services";
+import {
+  CreateUser,
+  CreateUserAuth,
+  GetUserByCpfcnpj,
+  GetUsers,
+} from "./services";
 import { BodyCreateUserSchema } from "./schemas/create-user.schema";
 import { CreateUserReqDto } from "./dtos/create-user-req.dto";
 import { UserNotFoundError } from "errors/user-not-found.error";
@@ -34,10 +39,8 @@ export const CreateUserHandler = async (
   try {
     const body = BodyCreateUserSchema.parse(req.body);
 
-		// Verify if user already exists
-		await GetUserByCpfcnpj(body.taxId);
-
-    // TODO Service to create user in supabase auth
+    // Verify if user already exists
+    await GetUserByCpfcnpj(body.taxId);
 
     // Creating address body
     const addressBody = {
@@ -57,8 +60,7 @@ export const CreateUserHandler = async (
 
     console.debug("Address successfully created:", JSON.stringify(address));
 
-    if (!address)
-      return;
+    if (!address) return;
 
     // Get id address
     const addressId = address.id;
@@ -78,14 +80,28 @@ export const CreateUserHandler = async (
 
     console.debug("User successfully created:", JSON.stringify(user));
 
-		if (!user) throw reply.status(400).send({ error: true, message: "User creation failed" });
-  
-		return reply.status(201).send({ error: false, message: user });
-	} catch (error) {	
+    if (!user)
+      throw reply
+        .status(400)
+        .send({ error: true, message: "User creation failed" });
+
+    // Creating user auth body
+    const userAuthBody = {
+      email: body.email.trim(),
+      password: body.password.trim(),
+      studioName: body.studioName.trim(),
+      taxId: body.taxId.trim(),
+    };
+
+    // Insert user authentication data into the database
+    await CreateUserAuth(userAuthBody);
+
+    return reply.status(201).send({ error: false, message: user });
+  } catch (error) {
     if (error instanceof UserAlreadyExists) {
       throw reply.status(404).send({ error: true, message: error.message });
     } else if (error instanceof AddressCreatingError) {
-        throw reply.status(400).send({ error: true, message: error.message });
+      throw reply.status(400).send({ error: true, message: error.message });
     } else {
       console.error("Error: ", error);
       throw reply
