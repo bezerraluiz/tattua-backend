@@ -5,7 +5,6 @@ import { CreateUserReqDto } from "./dtos/create-user-req.dto";
 import { UserNotFoundError } from "errors/user-not-found.error";
 import { CreateAddress } from "address/services";
 import { UserAlreadyExists } from "errors/user-already-exists.error";
-import { hashPassword } from "utils/bcrypt";
 import { AddressCreatingError } from "errors/address-creating.error";
 
 export const GetUsersHandler = async (
@@ -64,16 +63,11 @@ export const CreateUserHandler = async (
     // Get id address
     const addressId = address.id;
 
-    // Hashing password
-    const passwordBody = body.password;
-    const passwordHash = await hashPassword(passwordBody);
-
     // Creating user body
     const userBody: CreateUserReqDto = {
       studioName: body.studioName.trim(),
       email: body.email.trim(),
       taxId: body.taxId.trim(),
-      password: passwordHash.trim(),
       addressId: addressId,
     };
 

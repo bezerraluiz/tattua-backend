@@ -4,7 +4,6 @@ export interface User {
   studioName: string;
   email: string;
   taxId: string;
-  password: string;
   addressId: number;
   createdAt: Date;
   updatedAt: Date;

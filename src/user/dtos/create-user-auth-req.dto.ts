@@ -1,10 +1,6 @@
 import { User } from "user/user.model";
 
-export interface CreateUserReqDto
-  extends Omit<User, "id" | "uid" | "createdAt" | "updatedAt"> {}
-export interface CreateUserReqDto {
-  email: string;
+export interface CreateUserAuthReqDto
+  extends Pick<User, "email" | "studioName" | "taxId"> {
   password: string;
-  studio_name: string;
-  tax_id: string;
 }

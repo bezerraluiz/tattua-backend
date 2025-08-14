@@ -4,6 +4,7 @@ import { UserNotFoundError } from "errors/user-not-found.error";
 import { UserAlreadyExists } from "errors/user-already-exists.error";
 import { User } from "./user.model";
 import type { UpdateUserReqDto } from "./dtos/update-user-req.dto";
+import type { CreateUserAuthReqDto } from "./dtos/create-user-auth-req.dto";
 
 interface GetUsers {
   data: [];
@@ -58,30 +59,37 @@ export const UpdateUser = async (user: UpdateUserReqDto) => {
     .update({
       studioName: user.studioName,
       email: user.email,
-      password: user.password,
     })
-    .eq('id', user.id)
+    .eq("id", user.id)
     .select();
 
-    if (error) throw new Error(error.message);
+  if (error) throw new Error(error.message);
 
-    if (!data) throw new UserNotFoundError("Not users found");
+  if (!data) throw new UserNotFoundError("Not users found");
 
-    return data;
+  return data;
 };
 
 // TODO DeleteUser
 export const DeleteUser = async () => {};
 
 // TODO CreateUserAuth
-export const CreateUserAuth = async (user:) => {
+export const CreateUserAuth = async (user: CreateUserAuthReqDto) => {
   const { data, error } = await supabase.auth.signUp({
-    email: ,
-    password,
+    email: user.email,
+    password: user.password,
     options: {
       data: {
-        studio_name: 
-      }
-    }
+        studio_name: user.studioName,
+        tax_id: user.taxId,
+      },
+    },
   });
+
+  if (error) {
+    console.error("Supabase Auth error:", error);
+    throw new Error(`Authentication failed: ${error.message}`);
+  }
+
+  return data;
 };
