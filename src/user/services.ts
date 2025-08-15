@@ -73,7 +73,6 @@ export const UpdateUser = async (user: UpdateUserReqDto) => {
 // TODO DeleteUser
 export const DeleteUser = async () => {};
 
-// TODO CreateUserAuth
 export const CreateUserAuth = async (user: CreateUserAuthReqDto) => {
   const { data, error } = await supabase.auth.signUp({
     email: user.email,

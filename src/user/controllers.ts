@@ -1,19 +1,13 @@
 import { FastifyReply, FastifyRequest } from "fastify";
-import {
-  CreateUser,
-  CreateUserAuth,
-  GetUserByCpfcnpj,
-  GetUsers,
-} from "./services";
+import { CreateUser, CreateUserAuth, GetUserByCpfcnpj, GetUsers } from "./services";
 import { BodyCreateUserSchema } from "./schemas/create-user.schema";
 import { CreateUserReqDto } from "./dtos/create-user-req.dto";
 import { UserNotFoundError } from "errors/user-not-found.error";
 import { CreateAddress } from "address/services";
 import { UserAlreadyExists } from "errors/user-already-exists.error";
 import { AddressCreatingError } from "errors/address-creating.error";
-import { generateJwtToken } from "utils/jwt-generate";
-import { createClient } from "@supabase/supabase-js";
-import { SUPABASE_KEY, SUPABASE_URL } from "server";
+import { BodyCreateUserAuthSchema } from "./schemas/create-user-auth.schema";
+import type { CreateUserAuthReqDto } from "./dtos/create-user-auth-req.dto";
 
 export const GetUsersHandler = async (
   req: FastifyRequest,
@@ -35,6 +29,21 @@ export const GetUsersHandler = async (
   }
 };
 
+export const CreateUserAuthHandler = async (req: FastifyRequest, reply: FastifyReply) => {
+  try {
+    const body: CreateUserAuthReqDto = BodyCreateUserAuthSchema.parse(req.body);
+
+    // Verify if user already exists
+    await GetUserByCpfcnpj(body.taxId);
+
+    const response = await CreateUserAuth(body);
+
+    console.debug("User successfully created:", JSON.stringify(response));
+
+    return response;
+  } catch (error) {}
+};
+
 export const CreateUserHandler = async (
   req: FastifyRequest,
   reply: FastifyReply
@@ -42,8 +51,8 @@ export const CreateUserHandler = async (
   try {
     const body = BodyCreateUserSchema.parse(req.body);
 
-    // Verify if user already exists
-    await GetUserByCpfcnpj(body.taxId);
+		// Verify if user already exists
+		await GetUserByCpfcnpj(body.taxId);
 
     // Creating address body
     const addressBody = {
@@ -63,7 +72,8 @@ export const CreateUserHandler = async (
 
     console.debug("Address successfully created:", JSON.stringify(address));
 
-    if (!address) return;
+    if (!address)
+      return;
 
     // Get id address
     const addressId = address.id;
@@ -83,17 +93,14 @@ export const CreateUserHandler = async (
 
     console.debug("User successfully created:", JSON.stringify(user));
 
-    if (!user)
-      throw reply
-        .status(400)
-        .send({ error: true, message: "User creation failed" });
-
-    return reply.status(201).send({ error: false, message: user });
-  } catch (error) {
+		if (!user) throw reply.status(400).send({ error: true, message: "User creation failed" });
+  
+		return reply.status(201).send({ error: false, message: user });
+	} catch (error) {	
     if (error instanceof UserAlreadyExists) {
       throw reply.status(404).send({ error: true, message: error.message });
     } else if (error instanceof AddressCreatingError) {
-      throw reply.status(400).send({ error: true, message: error.message });
+        throw reply.status(400).send({ error: true, message: error.message });
     } else {
       console.error("Error: ", error);
       throw reply
