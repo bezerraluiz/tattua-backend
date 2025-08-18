@@ -5,22 +5,22 @@
 ![Fastify](https://img.shields.io/badge/Fastify-000000?style=flat-square&logo=fastify&logoColor=white)
 ![Supabase](https://img.shields.io/badge/Supabase-3ECF8E?style=flat-square&logo=supabase&logoColor=white)
 
-API REST para gerenciamento de estúdios de tatuagem e geração de orçamentos.
+REST API for tattoo studio management and quote generation.
 
-## Sobre
+## About
 
-Sistema backend que permite o cadastro de usuários/estúdios, gerenciamento de endereços e criação de orçamentos para serviços de tatuagem.
+Backend system that allows user/studio registration, address management, and quote creation for tattoo services.
 
-## Tecnologias
+## Technologies
 
-- **Node.js** - Runtime JavaScript
-- **TypeScript** - Superset tipado do JavaScript  
-- **Fastify** - Framework web de alta performance
-- **Supabase** - Backend-as-a-Service para PostgreSQL
-- **Zod** - Validação de esquemas TypeScript-first
-- **JWT** - Autenticação via JSON Web Tokens
+- **Node.js** - JavaScript runtime
+- **TypeScript** - Typed superset of JavaScript  
+- **Fastify** - High performance web framework
+- **Supabase** - Backend-as-a-Service for PostgreSQL
+- **Zod** - TypeScript-first schema validation
+- **JWT** - JSON Web Token authentication
 
-## Estrutura do Projeto
+## Project Structure
 
 ```
 src/
@@ -40,69 +40,70 @@ src/
 └── server.ts
 ```
 
-## Modelos de Dados
+## Data Models
 
 ### User
-- `name`: Nome do usuário
-- `email`: Email para autenticação
-- `password`: Senha criptografada
-- `tax_id`: CPF/CNPJ
-- `created_at`: Data de criação
+- `name`: User name
+- `email`: Email for authentication
+- `password`: Encrypted password
+- `tax_id`: CPF/CNPJ (Brazilian tax ID)
+- `created_at`: Creation date
 
 ### Address  
-- `street`: Logradouro
-- `number`: Número
-- `complement`: Complemento
-- `neighborhood`: Bairro
-- `city`: Cidade
-- `state`: Estado
-- `zip_code`: CEP
-- `user_id`: ID do usuário (FK)
+- `street`: Street address
+- `number`: Number
+- `complement`: Complement
+- `neighborhood`: Neighborhood
+- `city`: City
+- `state`: State
+- `zip_code`: ZIP code
+- `user_id`: User ID (FK)
 
-## Instalação
+## Installation
 
-1. Clone o repositório
+1. Clone the repository
 
 ```bash
 git clone https://github.com/bezerraluiz/tattua-backend.git
 cd tattua-backend
 ```
 
-2. Instale as dependências
+2. Install dependencies
 
 ```bash
 npm install
 ```
 
-3. Configure as variáveis de ambiente
+3. Configure environment variables
 
 ```env
-JWT_SECRET=seu_jwt_secret_aqui
-SUPABASE_URL=sua_url_do_supabase
-SUPABASE_KEY=sua_chave_do_supabase
+JWT_SECRET=your_jwt_secret_here
+SUPABASE_URL=your_supabase_url
+SUPABASE_ANON_KEY=your_supabase_key
+SUPABASE_SERVIC_ROLE_KEY=your_supabase_key
 ```
 
-4. Execute o servidor
+4. Run the server
 
 ```bash
 npm run dev
 ```
 
-Servidor disponível em `http://localhost:3333`
+Server available at `http://localhost:3333`
 
 ## Scripts
 
-- `npm run dev` - Executa o servidor em modo de desenvolvimento
-- `npm test` - Executa os testes
+- `npm run dev` - Runs the server in development mode
+- `npm test` - Runs tests
 
-## Segurança
+## Security
 
-- Senhas criptografadas com bcrypt
-- Autenticação JWT
-- Validação de dados com Zod
-- CORS configurado
+- Passwords encrypted with bcrypt
+- JWT authentication
+- Data validation with Zod
+- CORS configured
 
-## Autor
+## Author
 
 Luiz Bezerra  
 GitHub: [@bezerraluiz](https://github.com/bezerraluiz)

@@ -1,4 +1,4 @@
-import { supabase } from "server";
+import { supabaseAdmin } from "server";
 import { CreateUserReqDto } from "./dtos/create-user-req.dto";
 import { UserNotFoundError } from "errors/user-not-found.error";
 import { UserAlreadyExists } from "errors/user-already-exists.error";
@@ -13,7 +13,7 @@ interface GetUsers {
 }
 
 export const GetUsers = async (): Promise<User[]> => {
-  const { data, error } = await supabase.from("users").select();
+  const { data, error } = await supabaseAdmin.from("users").select();
 
   if (error) throw new Error(error.message);
 
@@ -23,7 +23,7 @@ export const GetUsers = async (): Promise<User[]> => {
 };
 
 export const GetUserByCpfcnpj = async (tax_id: string) => {
-  const { data, error } = await supabase
+  const { data, error } = await supabaseAdmin
     .from("users")
     .select("tax_id")
     .eq("tax_id", tax_id);
@@ -38,7 +38,7 @@ export const GetUserByCpfcnpj = async (tax_id: string) => {
 export const CreateUser = async (
   user: CreateUserReqDto
 ): Promise<User | null> => {
-  const { data, error } = await supabase.from("users").insert({
+  const { data, error } = await supabaseAdmin.from("users").insert({
     ...user,
   });
 
@@ -54,7 +54,7 @@ export const CreateUser = async (
 
 // TODO UpdateUser
 export const UpdateUser = async (user: UpdateUserReqDto) => {
-  const { data, error } = await supabase
+  const { data, error } = await supabaseAdmin
     .from("users")
     .update({
       studioName: user.studioName,
@@ -74,7 +74,7 @@ export const UpdateUser = async (user: UpdateUserReqDto) => {
 export const DeleteUser = async () => {};
 
 export const CreateUserAuth = async (user: CreateUserAuthReqDto) => {
-  const { data, error } = await supabase.auth.signUp({
+  const { data, error } = await supabaseAdmin.auth.signUp({
     email: user.email,
     password: user.password,
     options: {

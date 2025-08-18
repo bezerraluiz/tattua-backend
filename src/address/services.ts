@@ -1,5 +1,5 @@
 import { AddressNotFoundError } from "errors/address-not-found.error";
-import { supabase } from "server";
+import { supabaseAdmin } from "server";
 import { CreateAddressReqDto } from "./dtos/create-address-req.dto";
 import { Address } from "./adress.model";
 import { AddressCreatingError } from "errors/address-creating.error";
@@ -11,7 +11,7 @@ interface GetAddresses {
 }
 
 export const GetAddresses = async (): Promise<Address[]> => {
-  const { data, error } = await supabase.from("adresses").select();
+  const { data, error } = await supabaseAdmin.from("adresses").select();
 
   if (error) throw new Error(error.message);
 
@@ -25,7 +25,7 @@ export const CreateAddress = async (
 ): Promise<Address> => {
   console.debug("Creating a new address with data:", address);
 
-  const { data, error } = await supabase.from("addresses").insert({
+  const { data, error } = await supabaseAdmin.from("addresses").insert({
     ...address,
   }).select().single();
 
