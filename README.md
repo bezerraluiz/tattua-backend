@@ -1,124 +1,108 @@
-# Tattua 🎨
+# Tattua Backend
 
-Sistema de gerenciamento e geração de orçamentos para estúdios de tatuagem.
+![Node.js](https://img.shields.io/badge/Node.js-339933?style=flat-square&logo=node.js&logoColor=white)
+![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=flat-square&logo=typescript&logoColor=white)
+![Fastify](https://img.shields.io/badge/Fastify-000000?style=flat-square&logo=fastify&logoColor=white)
+![Supabase](https://img.shields.io/badge/Supabase-3ECF8E?style=flat-square&logo=supabase&logoColor=white)
 
-## 📋 Sobre o Projeto
+API REST para gerenciamento de estúdios de tatuagem e geração de orçamentos.
 
-O Tattua é uma API REST desenvolvida para facilitar o gerenciamento de estúdios de tatuagem e a criação de orçamentos personalizados para clientes. O sistema permite o cadastro de estúdios, criação de orçamentos detalhados e gerenciamento de campos personalizados.
+## Sobre
 
-## 🚀 Tecnologias Utilizadas
+Sistema backend que permite o cadastro de usuários/estúdios, gerenciamento de endereços e criação de orçamentos para serviços de tatuagem.
+
+## Tecnologias
 
 - **Node.js** - Runtime JavaScript
-- **TypeScript** - Superset tipado do JavaScript
-- **Fastify** - Framework web rápido e eficiente
-- **Supabase** - Backend-as-a-Service (BaaS)
+- **TypeScript** - Superset tipado do JavaScript  
+- **Fastify** - Framework web de alta performance
+- **Supabase** - Backend-as-a-Service para PostgreSQL
 - **Zod** - Validação de esquemas TypeScript-first
-- **bcrypt** - Hash de senhas
 - **JWT** - Autenticação via JSON Web Tokens
 
-## 📦 Dependências Principais
-
-```json
-{
-  "@fastify/cookie": "^11.0.2",
-  "@fastify/cors": "^11.1.0", 
-  "@fastify/jwt": "^9.1.0",
-  "@supabase/supabase-js": "^2.53.0",
-  "bcrypt": "^6.0.0",
-  "fastify": "^5.4.0",
-  "zod": "^4.0.14"
-}
-```
-
-## 🏗️ Estrutura do Projeto
+## Estrutura do Projeto
 
 ```
 src/
 ├── address/
-│   └── address.model.ts
+│   ├── address.model.ts
+│   ├── services.ts
+│   └── dtos/
+├── errors/
+├── routes/
 ├── user/
 │   ├── controllers.ts
 │   ├── services.ts
 │   ├── user.model.ts
 │   ├── dtos/
 │   └── schemas/
+├── utils/
 └── server.ts
 ```
 
-## 🗄️ Estrutura de Dados
+## Modelos de Dados
 
-### Studio (Estúdio)
-- `name`: Nome do estúdio
-- `address`: Endereço do estúdio
+### User
+- `name`: Nome do usuário
+- `email`: Email para autenticação
+- `password`: Senha criptografada
 - `tax_id`: CPF/CNPJ
-- `password`: Senha de acesso
-- `price_per_cm`: Preço por centímetro de tatuagem
-- `price_per_needle`: Preço por agulha utilizada
+- `created_at`: Data de criação
 
-### Quote (Orçamento)
-- `studio_name`: Nome do estúdio (FK para Studio)
-- `artist_name`: Nome do tatuador
-- `studio_tax_id`: CPF/CNPJ do estúdio (FK para Studio)
-- `client_name`: Nome do cliente
-- `size_cm`: Tamanho da tatuagem em centímetros
-- `needle_count`: Quantidade de agulhas utilizadas
-- `custom_fields`: Campos personalizados (dicionário)
-- `total_price`: Valor total do orçamento
+### Address  
+- `street`: Logradouro
+- `number`: Número
+- `complement`: Complemento
+- `neighborhood`: Bairro
+- `city`: Cidade
+- `state`: Estado
+- `zip_code`: CEP
+- `user_id`: ID do usuário (FK)
 
-### CustomField (Campo Personalizado)
-- `name`: Nome do campo
-- `value`: Valor do campo
-- `type`: Tipo de dados ("Texto" ou "Seleção")
+## Instalação
 
-## 🔗 Relacionamentos
+1. Clone o repositório
 
-- **Quote** pertence a **Studio**
-- **Quote** possui muitos **CustomFields**
-
-## ⚙️ Configuração do Ambiente
-
-1. Clone o repositório:
 ```bash
-git clone https://github.com/bezerraluiz/tattua.git
-cd tattua
+git clone https://github.com/bezerraluiz/tattua-backend.git
+cd tattua-backend
 ```
 
-2. Instale as dependências:
+2. Instale as dependências
+
 ```bash
 npm install
 ```
 
-3. Configure as variáveis de ambiente criando um arquivo `.env`:
+3. Configure as variáveis de ambiente
+
 ```env
 JWT_SECRET=seu_jwt_secret_aqui
 SUPABASE_URL=sua_url_do_supabase
 SUPABASE_KEY=sua_chave_do_supabase
 ```
 
-4. Execute o servidor em modo de desenvolvimento:
+4. Execute o servidor
+
 ```bash
 npm run dev
 ```
 
-O servidor estará rodando em `http://localhost:3333` 🚀
+Servidor disponível em `http://localhost:3333`
 
-## 🛠️ Scripts Disponíveis
+## Scripts
 
-- `npm run dev` - Executa o servidor em modo de desenvolvimento com hot reload
-- `npm test` - Executa os testes (ainda não implementado)
+- `npm run dev` - Executa o servidor em modo de desenvolvimento
+- `npm test` - Executa os testes
 
-## 🔒 Segurança
+## Segurança
 
-- Senhas são criptografadas usando bcrypt
-- Autenticação via JWT
-- CORS habilitado somente ao nosso front
+- Senhas criptografadas com bcrypt
+- Autenticação JWT
 - Validação de dados com Zod
+- CORS configurado
 
-## 👨‍💻 Autor
+## Autor
 
-**bezerraluiz**
-- GitHub: [@bezerraluiz](https://github.com/bezerraluiz)
-
----
-
-⭐ Se este projeto te ajudou, considere dar uma estrela no repositório!
+Luiz Bezerra  
+GitHub: [@bezerraluiz](https://github.com/bezerraluiz)

@@ -8,9 +8,14 @@ import { UserRoutes } from "routes/user.routes";
 dotenv.config();
 
 export const SUPABASE_URL: string = process.env.SUPABASE_URL as string;
-export const SUPABASE_KEY: string = process.env.SUPABASE_KEY as string;
+export const SUPABASE_ANON_KEY: string = process.env.SUPABASE_ANON_KEY as string;
+export const SUPABASE_SERVICE_ROLE_KEY: string = process.env.SUPABASE_SERVICE_ROLE_KEY as string;
 
-export const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
+// Service client (bypassa RLS) - admin operations
+export const supabaseAdmin = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY)
+
+// Normal client (with RLS) - users operations
+export const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 const server = fastify();
 
