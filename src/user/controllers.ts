@@ -22,7 +22,7 @@ export const GetUsersHandler = async (
   try {
     const users = await GetUsers();
 
-    return reply.status(200).send({ error: false, ...users });
+    return reply.status(200).send({ error: false, data: users });
   } catch (error) {
     if (error instanceof UserNotFoundError) {
       throw reply.status(404).send({ error: true, message: error.message });
@@ -44,8 +44,6 @@ export const CreateUserAuthHandler = async (
 
     const response = await CreateUserAuth(body);
 
-    console.debug("User successfully created:", JSON.stringify(response));
-
     return response;
   } catch (error) {
     console.error("Error: ", error);
@@ -59,7 +57,7 @@ export const CreateUserHandler = async (
   req: FastifyRequest,
   reply: FastifyReply
 ) => {
-  try {
+  try {    
     const body = BodyCreateUserSchema.parse(req.body);
 
     // Creating address body
@@ -70,7 +68,7 @@ export const CreateUserHandler = async (
       complement: body.complement ? body.complement.trim() : "",
       city: body.city.trim(),
       state: body.state.trim(),
-      zipCode: body.zipCode.trim(),
+      zip_code: body.zip_code.trim(),
     };
 
     // Insert address in database
@@ -83,10 +81,10 @@ export const CreateUserHandler = async (
 
     // Creating user body
     const userBody: CreateUserReqDto = {
-      studioName: body.studioName.trim(),
+      studio_name: body.studio_name.trim(),
       email: body.email.trim(),
-      taxId: body.taxId.trim(),
-      addressId: addressId,
+      tax_id: body.tax_id.trim(),
+      address_id: addressId,
     };
 
     // Verify if password is strong
@@ -106,10 +104,10 @@ export const CreateUserHandler = async (
         .status(400)
         .send({ error: true, message: "User creation failed" });
 
-    return reply.status(201).send({ error: false, message: user });
+    return reply.status(201).send({ error: false, data: user });
   } catch (error) {
     if (error instanceof UserAlreadyExists) {
-      throw reply.status(404).send({ error: true, message: error.message });
+      throw reply.status(409).send({ error: true, message: error.message });
     } else if (error instanceof AddressCreatingError) {
       throw reply.status(400).send({ error: true, message: error.message });
     } else {

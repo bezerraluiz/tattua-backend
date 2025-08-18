@@ -57,7 +57,7 @@ export const UpdateUser = async (user: UpdateUserReqDto) => {
   const { data, error } = await supabaseAdmin
     .from("users")
     .update({
-      studioName: user.studioName,
+      studioName: user.studio_name,
       email: user.email,
     })
     .eq("id", user.id)

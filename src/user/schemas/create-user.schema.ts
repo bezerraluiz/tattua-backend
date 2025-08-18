@@ -1,9 +1,9 @@
 import z from "zod";
 
 export const BodyCreateUserSchema = z.object({
-  studioName: z.string(),
+  studio_name: z.string(),
   email: z.email(),
-  taxId: z.string(),
+  tax_id: z.string(),
   password: z.string(),
   country: z.string(),
   street: z.string(),
@@ -11,5 +11,5 @@ export const BodyCreateUserSchema = z.object({
   complement: z.string().optional(),
   city: z.string(),
   state: z.string(),
-  zipCode: z.string(),
+  zip_code: z.string(),
 });

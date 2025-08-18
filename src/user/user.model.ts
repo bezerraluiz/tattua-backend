@@ -1,10 +1,10 @@
 export interface User {
   id: number;
   uid: string;
-  studioName: string;
+  studio_name: string;
   email: string;
-  taxId: string;
-  addressId: number;
-  createdAt: Date;
-  updatedAt: Date;
+  tax_id: string;
+  address_id: number;
+  created_at: Date;
+  updated_at: Date;
 }

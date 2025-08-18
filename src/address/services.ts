@@ -23,14 +23,9 @@ export const GetAddresses = async (): Promise<Address[]> => {
 export const CreateAddress = async (
   address: CreateAddressReqDto
 ): Promise<Address> => {
-  console.debug("Creating a new address with data:", address);
-
   const { data, error } = await supabaseAdmin.from("addresses").insert({
     ...address,
   }).select().single();
-
-  console.debug("Data:", data);
-  console.debug("Error:", error);
 
   if (error) throw new AddressCreatingError("Failed to create address");
 

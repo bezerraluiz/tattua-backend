@@ -7,7 +7,7 @@ export interface Address {
   complement?: string;
   city: string;
   state: string;
-  zipCode: string;
-  createdAt: Date;
-  updatedAt: Date;
+  zip_code: string;
+  created_at: Date;
+  updated_at: Date;
 }
