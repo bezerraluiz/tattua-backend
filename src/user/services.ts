@@ -1,10 +1,9 @@
 import { supabaseAdmin } from "server";
-import { CreateUserReqDto } from "./dtos/create-user-req.dto";
 import { UserNotFoundError } from "errors/user-not-found.error";
 import { UserAlreadyExists } from "errors/user-already-exists.error";
 import { User } from "./user.model";
 import type { UpdateUserReqDto } from "./dtos/update-user-req.dto";
-import type { CreateUserAuthReqDto } from "./dtos/create-user-auth-req.dto";
+import type { CreateUserReqDto } from "./dtos/create-user-req.dto";
 
 interface GetUsers {
   data: [];
@@ -35,17 +34,20 @@ export const GetUserByCpfcnpj = async (tax_id: string) => {
   return data;
 };
 
-export const CreateUser = async (
-  user: CreateUserReqDto
-): Promise<User | null> => {
-  const { data, error } = await supabaseAdmin.from("users").insert({
-    ...user,
+export const CreateUser = async (user: CreateUserReqDto) => {
+  const { data, error } = await supabaseAdmin.auth.signUp({
+    email: user.email,
+    password: user.password,
+    options: {
+      data: {
+        studio_name: user.studio_name,
+        tax_id: user.tax_id,
+        address_id: user.address_id,
+      },
+    },
   });
 
   if (error) {
-    if (error.code == "23505") {
-      throw new UserAlreadyExists("User already registered");
-    }
     throw new Error(error.message);
   }
 
@@ -57,8 +59,10 @@ export const UpdateUser = async (user: UpdateUserReqDto) => {
   const { data, error } = await supabaseAdmin
     .from("users")
     .update({
-      studioName: user.studio_name,
+      studio_name: user.studio_name,
       email: user.email,
+      address_id: user.address_id,
+      password: user.password,
     })
     .eq("id", user.id)
     .select();
@@ -72,22 +76,3 @@ export const UpdateUser = async (user: UpdateUserReqDto) => {
 
 // TODO DeleteUser
 export const DeleteUser = async () => {};
-
-export const CreateUserAuth = async (user: CreateUserAuthReqDto) => {
-  const { data, error } = await supabaseAdmin.auth.signUp({
-    email: user.email,
-    password: user.password,
-    options: {
-      data: {
-        studio_name: user.studioName,
-        tax_id: user.taxId,
-      },
-    },
-  });
-
-  if (error) {
-    throw new Error(error.message);
-  }
-
-  return data;
-};

@@ -1,8 +1,8 @@
 import z from "zod";
 
 export const BodyCreateUserAuthSchema = z.object({
-  studioName: z.string(),
+  studio_name: z.string(),
   email: z.email(),
-  taxId: z.string(),
+  tax_id: z.string(),
   password: z.string(),
 });

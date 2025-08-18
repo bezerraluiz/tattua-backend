@@ -56,12 +56,17 @@ CREATE TRIGGER update_users_updated_at
 CREATE OR REPLACE FUNCTION public.handle_new_user()
 RETURNS trigger AS $$
 BEGIN
-  INSERT INTO public.users (uid, email, studio_name, tax_id)
+  INSERT INTO public.users (uid, email, studio_name, tax_id, address_id)
   VALUES (
     NEW.id,
     NEW.email,
     COALESCE(NEW.raw_user_meta_data->>'studio_name', ''),
-    COALESCE(NEW.raw_user_meta_data->>'tax_id', '')
+    COALESCE(NEW.raw_user_meta_data->>'tax_id', ''),
+    CASE 
+      WHEN NEW.raw_user_meta_data->>'address_id' IS NOT NULL 
+      THEN (NEW.raw_user_meta_data->>'address_id')::INTEGER 
+      ELSE NULL 
+    END
   );
   RETURN NEW;
 END;

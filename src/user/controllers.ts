@@ -1,19 +1,17 @@
 import { FastifyReply, FastifyRequest } from "fastify";
 import {
   CreateUser,
-  CreateUserAuth,
   GetUserByCpfcnpj,
   GetUsers,
 } from "./services";
 import { BodyCreateUserSchema } from "./schemas/create-user.schema";
-import { CreateUserReqDto } from "./dtos/create-user-req.dto";
 import { UserNotFoundError } from "errors/user-not-found.error";
 import { CreateAddress } from "address/services";
 import { UserAlreadyExists } from "errors/user-already-exists.error";
 import { AddressCreatingError } from "errors/address-creating.error";
 import { BodyCreateUserAuthSchema } from "./schemas/create-user-auth.schema";
-import type { CreateUserAuthReqDto } from "./dtos/create-user-auth-req.dto";
 import { PasswordStrong } from "utils/password-strong";
+import type { CreateUserReqDto } from "./dtos/create-user-req.dto";
 
 export const GetUsersHandler = async (
   req: FastifyRequest,
@@ -32,24 +30,6 @@ export const GetUsersHandler = async (
         .status(500)
         .send({ error: true, message: "Internal Server Error" });
     }
-  }
-};
-
-export const CreateUserAuthHandler = async (
-  req: FastifyRequest,
-  reply: FastifyReply
-) => {
-  try {
-    const body: CreateUserAuthReqDto = BodyCreateUserAuthSchema.parse(req.body);
-
-    const response = await CreateUserAuth(body);
-
-    return response;
-  } catch (error) {
-    console.error("Error: ", error);
-    throw reply
-      .status(500)
-      .send({ error: true, message: "Internal Server Error" });
   }
 };
 
@@ -84,6 +64,7 @@ export const CreateUserHandler = async (
       studio_name: body.studio_name.trim(),
       email: body.email.trim(),
       tax_id: body.tax_id.trim(),
+      password: body.password.trim(),
       address_id: addressId,
     };
 

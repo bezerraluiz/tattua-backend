@@ -1,4 +1,6 @@
 import { User } from "user/user.model";
 
 export interface UpdateUserReqDto
-  extends Omit<User, "uid" | "createdAt" | "updatedAt"> {}
+  extends Pick<User, "id" | "email" | "studio_name" | "tax_id" | "address_id"> {
+  password: string;
+}
