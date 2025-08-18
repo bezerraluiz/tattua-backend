@@ -1,5 +1,10 @@
 import { FastifyReply, FastifyRequest } from "fastify";
-import { CreateUser, CreateUserAuth, GetUserByCpfcnpj, GetUsers } from "./services";
+import {
+  CreateUser,
+  CreateUserAuth,
+  GetUserByCpfcnpj,
+  GetUsers,
+} from "./services";
 import { BodyCreateUserSchema } from "./schemas/create-user.schema";
 import { CreateUserReqDto } from "./dtos/create-user-req.dto";
 import { UserNotFoundError } from "errors/user-not-found.error";
@@ -8,6 +13,7 @@ import { UserAlreadyExists } from "errors/user-already-exists.error";
 import { AddressCreatingError } from "errors/address-creating.error";
 import { BodyCreateUserAuthSchema } from "./schemas/create-user-auth.schema";
 import type { CreateUserAuthReqDto } from "./dtos/create-user-auth-req.dto";
+import { PasswordStrong } from "utils/password-strong";
 
 export const GetUsersHandler = async (
   req: FastifyRequest,
@@ -29,19 +35,24 @@ export const GetUsersHandler = async (
   }
 };
 
-export const CreateUserAuthHandler = async (req: FastifyRequest, reply: FastifyReply) => {
+export const CreateUserAuthHandler = async (
+  req: FastifyRequest,
+  reply: FastifyReply
+) => {
   try {
     const body: CreateUserAuthReqDto = BodyCreateUserAuthSchema.parse(req.body);
-
-    // Verify if user already exists
-    await GetUserByCpfcnpj(body.taxId);
 
     const response = await CreateUserAuth(body);
 
     console.debug("User successfully created:", JSON.stringify(response));
 
     return response;
-  } catch (error) {}
+  } catch (error) {
+    console.error("Error: ", error);
+    throw reply
+      .status(500)
+      .send({ error: true, message: "Internal Server Error" });
+  }
 };
 
 export const CreateUserHandler = async (
@@ -50,9 +61,6 @@ export const CreateUserHandler = async (
 ) => {
   try {
     const body = BodyCreateUserSchema.parse(req.body);
-
-		// Verify if user already exists
-		await GetUserByCpfcnpj(body.taxId);
 
     // Creating address body
     const addressBody = {
@@ -65,15 +73,10 @@ export const CreateUserHandler = async (
       zipCode: body.zipCode.trim(),
     };
 
-    console.debug("Address body prepared:", JSON.stringify(addressBody));
-
     // Insert address in database
     const address = await CreateAddress(addressBody);
 
-    console.debug("Address successfully created:", JSON.stringify(address));
-
-    if (!address)
-      return;
+    if (!address) return;
 
     // Get id address
     const addressId = address.id;
@@ -86,21 +89,29 @@ export const CreateUserHandler = async (
       addressId: addressId,
     };
 
-    console.debug("User body prepared:", JSON.stringify(userBody));
+    // Verify if password is strong
+    if (!body.password || !PasswordStrong(body.password)) {
+      return reply.status(400).send({
+        error: true,
+        message:
+          "Password must be at least 8 characters long, contain at least one uppercase letter, one lowercase letter, one number and one special character",
+      });
+    }
 
     // Inser user in database
     const user = await CreateUser(userBody);
 
-    console.debug("User successfully created:", JSON.stringify(user));
+    if (!user)
+      throw reply
+        .status(400)
+        .send({ error: true, message: "User creation failed" });
 
-		if (!user) throw reply.status(400).send({ error: true, message: "User creation failed" });
-  
-		return reply.status(201).send({ error: false, message: user });
-	} catch (error) {	
+    return reply.status(201).send({ error: false, message: user });
+  } catch (error) {
     if (error instanceof UserAlreadyExists) {
       throw reply.status(404).send({ error: true, message: error.message });
     } else if (error instanceof AddressCreatingError) {
-        throw reply.status(400).send({ error: true, message: error.message });
+      throw reply.status(400).send({ error: true, message: error.message });
     } else {
       console.error("Error: ", error);
       throw reply
