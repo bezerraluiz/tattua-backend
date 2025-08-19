@@ -31,3 +31,15 @@ export const CreateAddress = async (
 
   return data;
 };
+
+export const DeleteAddress = async (id: number) => {
+  const { error } = await supabaseAdmin
+    .from("addresses")
+    .delete()
+    .eq("id", id);
+  
+  if (error) 
+    throw new Error(`Failed to delete address: ${error.message}`);
+  
+  console.debug(`Address ${id} deleted successfully`);
+};

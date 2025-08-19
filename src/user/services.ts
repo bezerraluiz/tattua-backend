@@ -4,6 +4,8 @@ import { UserAlreadyExists } from "errors/user-already-exists.error";
 import { User } from "./user.model";
 import type { UpdateUserReqDto } from "./dtos/update-user-req.dto";
 import type { CreateUserReqDto } from "./dtos/create-user-req.dto";
+import { DeleteAddress } from "address/services";
+import { UserUpdatingError } from "errors/user-updating.error";
 
 interface GetUsers {
   data: [];
@@ -42,7 +44,6 @@ export const CreateUser = async (user: CreateUserReqDto) => {
       data: {
         studio_name: user.studio_name,
         tax_id: user.tax_id,
-        address_id: user.address_id,
       },
     },
   });
@@ -54,25 +55,59 @@ export const CreateUser = async (user: CreateUserReqDto) => {
   return data;
 };
 
-// TODO UpdateUser
 export const UpdateUser = async (user: UpdateUserReqDto) => {
-  const { data, error } = await supabaseAdmin
-    .from("users")
-    .update({
+  console.debug("Updating user:", user);
+
+  if (!user.uid) {
+    throw new UserNotFoundError("User ID is required for update");
+  }
+
+  const { data, error } = await supabaseAdmin.auth.admin.updateUserById(user.uid, {
+    email: user.email,
+    password: user.password,
+    user_metadata: {
       studio_name: user.studio_name,
-      email: user.email,
       address_id: user.address_id,
-      password: user.password,
-    })
-    .eq("id", user.id)
-    .select();
+    },
+  });
 
-  if (error) throw new Error(error.message);
+  if (error) throw new UserUpdatingError("Failed to update user");
 
-  if (!data) throw new UserNotFoundError("Not users found");
+  if (!data.user) throw new UserNotFoundError("User not found");
 
-  return data;
+  return data.user;
 };
 
-// TODO DeleteUser
-export const DeleteUser = async () => {};
+export const DeleteUser = async (uid: string) => {
+  const { error } = await supabaseAdmin.auth.admin.deleteUser(uid);
+  
+  if (error) 
+    throw new Error(`Failed to delete user: ${error.message}`);
+  
+  console.debug(`User ${uid} deleted successfully`);
+};
+
+export const RollbackUserCreation = async (user?: any, address?: any) => {
+  // ROLLBACK: Delete everything that was created
+  console.log("Error occurred, starting rollback...");
+
+  // Delete user if it was created
+  if (user?.user) {
+    try {
+      await DeleteUser(user.user.id);
+      console.log("Rolled back user creation");
+    } catch (rollbackError) {
+      console.error("Failed to rollback user:", rollbackError);
+    }
+  }
+
+  // Delete address if it was created
+  if (address && address.id) {
+    try {
+      await DeleteAddress(address.id);
+      console.log("Rolled back address creation");
+    } catch (rollbackError) {
+      console.error("Failed to rollback address:", rollbackError);
+    }
+  }
+};
