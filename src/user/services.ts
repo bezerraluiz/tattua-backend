@@ -67,7 +67,6 @@ export const UpdateUser = async (user: UpdateUserReqDto) => {
     password: user.password,
     user_metadata: {
       studio_name: user.studio_name,
-      address_id: user.address_id,
     },
   });
 
@@ -87,7 +86,7 @@ export const DeleteUser = async (uid: string) => {
   console.debug(`User ${uid} deleted successfully`);
 };
 
-export const RollbackUserCreation = async (user?: any, address?: any) => {
+export const RollbackUserCreation = async (user?: any) => {
   // ROLLBACK: Delete everything that was created
   console.log("Error occurred, starting rollback...");
 
@@ -98,16 +97,6 @@ export const RollbackUserCreation = async (user?: any, address?: any) => {
       console.log("Rolled back user creation");
     } catch (rollbackError) {
       console.error("Failed to rollback user:", rollbackError);
-    }
-  }
-
-  // Delete address if it was created
-  if (address && address.id) {
-    try {
-      await DeleteAddress(address.id);
-      console.log("Rolled back address creation");
-    } catch (rollbackError) {
-      console.error("Failed to rollback address:", rollbackError);
     }
   }
 };

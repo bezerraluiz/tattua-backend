@@ -43,3 +43,15 @@ export const DeleteAddress = async (id: number) => {
   
   console.debug(`Address ${id} deleted successfully`);
 };
+
+export const DeleteAddressByUserId = async (userId: number) => {
+  const { error } = await supabaseAdmin
+    .from("addresses")
+    .delete()
+    .eq("user_id", userId);
+  
+  if (error) 
+    throw new Error(`Failed to delete address for user: ${error.message}`);
+  
+  console.debug(`Address for user ${userId} deleted successfully`);
+};

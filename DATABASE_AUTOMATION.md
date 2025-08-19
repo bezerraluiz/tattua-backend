@@ -40,17 +40,12 @@ Syncs user creation from Supabase Auth to the `public.users` table.
 CREATE OR REPLACE FUNCTION public.handle_new_user()
 RETURNS trigger AS $$
 BEGIN
-  INSERT INTO public.users (uid, email, studio_name, tax_id, address_id)
+  INSERT INTO public.users (uid, email, studio_name, tax_id)
   VALUES (
     NEW.id,
     NEW.email,
     COALESCE(NEW.raw_user_meta_data->>'studio_name', ''),
-    COALESCE(NEW.raw_user_meta_data->>'tax_id', ''),
-    CASE 
-      WHEN NEW.raw_user_meta_data->>'address_id' IS NOT NULL 
-      THEN (NEW.raw_user_meta_data->>'address_id')::INTEGER 
-      ELSE NULL 
-    END
+    COALESCE(NEW.raw_user_meta_data->>'tax_id', '')
   );
   RETURN NEW;
 END;
@@ -59,7 +54,7 @@ $$ LANGUAGE plpgsql SECURITY DEFINER;
 
 ### 3. handle_auth_user_update()
 
-![Status](https://img.shields.io/badge/Status-Pending-red)
+![Status](https://img.shields.io/badge/Status-Implemented-green)
 
 Syncs user updates from Supabase Auth to the `public.users` table.
 
@@ -72,11 +67,6 @@ BEGIN
     email = NEW.email,
     studio_name = COALESCE(NEW.raw_user_meta_data->>'studio_name', studio_name),
     tax_id = COALESCE(NEW.raw_user_meta_data->>'tax_id', tax_id),
-    address_id = CASE 
-      WHEN NEW.raw_user_meta_data->>'address_id' IS NOT NULL 
-      THEN (NEW.raw_user_meta_data->>'address_id')::INTEGER 
-      ELSE address_id 
-    END,
     updated_at = NOW()
   WHERE uid = NEW.id;
   
@@ -87,9 +77,9 @@ $$ LANGUAGE plpgsql SECURITY DEFINER;
 
 ### 4. handle_auth_user_delete()
 
-![Status](https://img.shields.io/badge/Status-Pending-red)
+![Status](https://img.shields.io/badge/Status-Implemented-green)
 
-Removes user from the `public.users` table when deleted from Auth.
+Removes user from the `public.users` table when deleted from Auth. Also deletes associated addresses due to CASCADE constraint.
 
 ```sql
 CREATE OR REPLACE FUNCTION public.handle_auth_user_delete()
@@ -133,7 +123,7 @@ CREATE TRIGGER on_auth_user_created
 
 ### User Update Trigger
 
-![Status](https://img.shields.io/badge/Status-Pending-red)
+![Status](https://img.shields.io/badge/Status-Implemented-green)
 
 ```sql
 CREATE TRIGGER on_auth_user_updated
@@ -143,7 +133,7 @@ CREATE TRIGGER on_auth_user_updated
 
 ### User Deletion Trigger
 
-![Status](https://img.shields.io/badge/Status-Pending-red)
+![Status](https://img.shields.io/badge/Status-Implemented-green)
 
 ```sql
 CREATE TRIGGER on_auth_user_deleted
@@ -158,6 +148,7 @@ CREATE TRIGGER on_auth_user_deleted
 ```sql
 id                SERIAL PRIMARY KEY
 uid               UUID UNIQUE NOT NULL DEFAULT gen_random_uuid()
+user_id           INTEGER REFERENCES users(id) ON DELETE CASCADE
 country           VARCHAR(100) NOT NULL
 street            VARCHAR(255) NOT NULL
 number            VARCHAR(20) NOT NULL
@@ -177,7 +168,6 @@ uid               UUID UNIQUE NOT NULL DEFAULT gen_random_uuid()
 studio_name       VARCHAR(255) NOT NULL
 email             VARCHAR(255) UNIQUE NOT NULL
 tax_id            VARCHAR(20) UNIQUE NOT NULL
-address_id        INTEGER REFERENCES addresses(id)
 created_at        TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 updated_at        TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 ```

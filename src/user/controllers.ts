@@ -16,6 +16,8 @@ import { BodyCreateUserAuthSchema } from "./schemas/create-user-auth.schema";
 import { PasswordStrong } from "utils/password-strong";
 import type { CreateUserReqDto } from "./dtos/create-user-req.dto";
 import { UserUpdatingError } from "errors/user-updating.error";
+import { QueryDeleteUserSchema } from "./schemas/delete-user.schema";
+import { supabaseAdmin } from "server";
 
 export const GetUsersHandler = async (
   req: FastifyRequest,
@@ -44,7 +46,7 @@ export const CreateUserHandler = async (
   let user: any = {};
   let address: any = {};
 
-  try {    
+  try {
     const body = BodyCreateUserSchema.parse(req.body);
 
     // Verify if password is strong
@@ -67,7 +69,7 @@ export const CreateUserHandler = async (
       password: body.password.trim(),
     };
 
-    // Inser user in database
+    // Insert user in database
     user = await CreateUser(userBody);
 
     console.debug("User created:", user);
@@ -77,8 +79,20 @@ export const CreateUserHandler = async (
         .status(400)
         .send({ error: true, message: "User creation failed" });
 
-    // Creating address body
+    // Get the user from public.users table to get the ID
+    const { data: userData, error: userError } = await supabaseAdmin
+      .from("users")
+      .select("id")
+      .eq("uid", user.user.id)
+      .single();
+
+    if (userError || !userData) {
+      throw new Error("Failed to get user ID from database");
+    }
+
+    // Creating address body with user_id
     const addressBody = {
+      user_id: userData.id,
       country: body.country.trim(),
       street: body.street.trim(),
       number: body.number.trim(),
@@ -93,37 +107,55 @@ export const CreateUserHandler = async (
 
     if (!address) return;
 
-    // Get id address
-    const addressId = address.id;
-
-    // Creating update user body
-    const updateUserBody = {
-      uid: user.user.id,
-      address_id: addressId,
-    }
-
-    // Update user with address id
-    const updatedUser = await UpdateUser(updateUserBody);
-
-    return reply.status(201).send({ error: false, data: updatedUser });
+    return reply.status(201).send({ error: false, data: user.user });
   } catch (error) {
     if (error instanceof UserAlreadyExists) {
       console.error("User already exists:", error.message);
       throw reply.status(409).send({ error: true, message: error.message });
     } else if (error instanceof AddressCreatingError) {
       console.error("Address creation failed:", error.message);
-      await RollbackUserCreation(user, address);
+      await RollbackUserCreation(user);
       throw reply.status(400).send({ error: true, message: error.message });
     } else if (error instanceof UserNotFoundError) {
       console.error("User not found:", error.message);
       throw reply.status(404).send({ error: true, message: error.message });
     } else if (error instanceof UserUpdatingError) {
       console.error("User update failed:", error.message);
-      await RollbackUserCreation(user, address);
+      await RollbackUserCreation(user);
       throw reply.status(404).send({ error: true, message: error.message });
     } else {
       console.error("Error: ", error);
-      await RollbackUserCreation(user, address);
+      await RollbackUserCreation(user);
+      throw reply
+        .status(500)
+        .send({ error: true, message: "Internal Server Error" });
+    }
+  }
+};
+
+export const DeleteUserHandler = async (
+  req: FastifyRequest,
+  reply: FastifyReply
+) => {
+  try {
+    const { uid } = QueryDeleteUserSchema.parse(req.query)
+
+    if (!uid) {
+      throw new UserNotFoundError("User ID is required for deletion");
+    }
+
+    // Delete user
+    await DeleteUser(uid);
+
+    console.debug(
+      `User ${uid} deleted successfully`
+    );
+  } catch (error) {
+    if (error instanceof UserNotFoundError) {
+      console.error("User not found:", error.message);
+      throw reply.status(404).send({ error: true, message: error.message });
+    } else {
+      console.error("Error: ", error);
       throw reply
         .status(500)
         .send({ error: true, message: "Internal Server Error" });
