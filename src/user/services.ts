@@ -4,7 +4,6 @@ import { UserAlreadyExists } from "errors/user-already-exists.error";
 import { User } from "./user.model";
 import type { UpdateUserReqDto } from "./dtos/update-user-req.dto";
 import type { CreateUserReqDto } from "./dtos/create-user-req.dto";
-import { DeleteAddress } from "address/services";
 import { UserUpdatingError } from "errors/user-updating.error";
 
 interface GetUsers {
@@ -56,8 +55,6 @@ export const CreateUser = async (user: CreateUserReqDto) => {
 };
 
 export const UpdateUser = async (user: UpdateUserReqDto) => {
-  console.debug("Updating user:", user);
-
   if (!user.uid) {
     throw new UserNotFoundError("User ID is required for update");
   }
