@@ -59,27 +59,32 @@ export const UpdateUser = async (user: UpdateUserReqDto) => {
     throw new UserNotFoundError("User ID is required for update");
   }
 
-  const { data, error } = await supabaseAdmin.auth.admin.updateUserById(user.uid, {
-    email: user.email,
-    password: user.password,
-    user_metadata: {
-      studio_name: user.studio_name,
-    },
-  });
+  const { data, error } = await supabaseAdmin.auth.admin.updateUserById(
+    user.uid,
+    {
+      email: user.email,
+      password: user.password,
+      user_metadata: {
+        studio_name: user.studio_name,
+      },
+    }
+  );
 
-  if (error) throw new UserUpdatingError("Failed to update user");
-
-  if (!data.user) throw new UserNotFoundError("User not found");
+  if (error) {
+    if (error.code == "user_not_found") {
+      throw new UserNotFoundError("User not found");
+    }
+    throw new UserUpdatingError("Failed to update user");
+  }
 
   return data.user;
 };
 
 export const DeleteUser = async (uid: string) => {
   const { error } = await supabaseAdmin.auth.admin.deleteUser(uid);
-  
-  if (error) 
-    throw new Error(`Failed to delete user: ${error.message}`);
-  
+
+  if (error) throw new Error(`Failed to delete user: ${error.message}`);
+
   console.debug(`User ${uid} deleted successfully`);
 };
 
