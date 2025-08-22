@@ -6,12 +6,6 @@ import type { UpdateUserReqDto } from "./dtos/update-user-req.dto";
 import type { CreateUserReqDto } from "./dtos/create-user-req.dto";
 import { UserUpdatingError } from "errors/user-updating.error";
 
-interface GetUsers {
-  data: [];
-  status: number;
-  statusText: string;
-}
-
 export const GetUsers = async (): Promise<User[]> => {
   const { data, error } = await supabaseAdmin.from("users").select();
 
@@ -55,9 +49,8 @@ export const CreateUser = async (user: CreateUserReqDto) => {
 };
 
 export const UpdateUser = async (user: UpdateUserReqDto) => {
-  if (!user.uid) {
+  if (!user.uid)
     throw new UserNotFoundError("User ID is required for update");
-  }
 
   const { data, error } = await supabaseAdmin.auth.admin.updateUserById(
     user.uid,

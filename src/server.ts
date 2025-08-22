@@ -3,6 +3,7 @@ import cors from "@fastify/cors";
 import dotenv from "dotenv";
 import { createClient } from "@supabase/supabase-js";
 import { UserRoutes } from "routes/user.routes";
+import { AddressRoutes } from "routes/address.routes";
 
 // Load environment variables from .env file
 dotenv.config();
@@ -42,6 +43,7 @@ server.route({
 
 // Routes
 server.register(UserRoutes);
+server.register(AddressRoutes);
 
 server.listen({ host: "0.0.0.0", port: 3333 }).then(() => {
   console.debug("Server is running on localhost:3333 🚀");
