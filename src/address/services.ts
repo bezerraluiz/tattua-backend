@@ -6,11 +6,22 @@ import { AddressCreatingError } from "errors/address-creating.error";
 import type { UpdateAddressReqDto } from "./dtos/update-address-req.dto";
 
 export const GetAddresses = async (): Promise<Address[]> => {
-  const { data, error } = await supabaseAdmin.from("adresses").select();
+  const { data, error } = await supabaseAdmin.from("addresses").select();
 
   if (error) throw new Error(error.message);
 
   if (!data) throw new AddressNotFoundError("No addresses found");
+
+  return data;
+};
+
+export const GetAddressByUserId = async (user_id: number) => {
+  const { data, error } = await supabaseAdmin
+    .from("addresses")
+    .select("*")
+    .eq("user_id", user_id);
+
+  if (error) throw new Error(error.message);
 
   return data;
 };

@@ -19,7 +19,7 @@ export const GetUsers = async (): Promise<User[]> => {
 export const GetUserByCpfcnpj = async (tax_id: string) => {
   const { data, error } = await supabaseAdmin
     .from("users")
-    .select("tax_id")
+    .select("*")
     .eq("tax_id", tax_id);
 
   if (error) throw new Error(error.message);

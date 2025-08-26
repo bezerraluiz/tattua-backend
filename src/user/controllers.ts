@@ -18,6 +18,29 @@ import { UserUpdatingError } from "errors/user-updating.error";
 import { QueryDeleteUserSchema } from "./schemas/delete-user.schema";
 import { supabaseAdmin } from "server";
 import { BodyUpdateUserSchema, QueryUpdateUserSchema } from "./schemas/update-user.schema";
+import { QueryGetUserCpfcnpjSchema } from "./schemas/get-user-cpfcnpj.schema";
+
+export const GetUserByCpfcnpjHandler = async (
+  req: FastifyRequest,
+  reply: FastifyReply
+) => {
+  try {
+    const { tax_id } = QueryGetUserCpfcnpjSchema.parse(req.query);
+
+    const users = await GetUserByCpfcnpj(tax_id);
+
+    return reply.status(200).send({ error: false, data: users });
+  } catch (error) {
+    if (error instanceof UserNotFoundError) {
+      throw reply.status(404).send({ error: true, message: error.message });
+    } else {
+      console.error("Error: ", error);
+      throw reply
+        .status(500)
+        .send({ error: true, message: "Internal Server Error" });
+    }
+  }
+};
 
 export const GetUsersHandler = async (
   req: FastifyRequest,

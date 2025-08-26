@@ -1,8 +1,28 @@
 import type { FastifyReply, FastifyRequest } from "fastify";
-import { UpdateAddress } from "./services";
+import { GetAddresses, UpdateAddress } from "./services";
 import { AddressNotFoundError } from "errors/address-not-found.error";
 import { AddressUpdatingError } from "errors/address-updating.error";
 import { BodyUpdateAddressSchema, QueryUpdateAddressSchema } from "./schemas/update-user.schema";
+
+export const GetAddressesHandler = async (
+  req: FastifyRequest,
+  reply: FastifyReply
+) => {
+  try {
+    const users = await GetAddresses();
+
+    return reply.status(200).send({ error: false, data: users });
+  } catch (error) {
+    if (error instanceof AddressNotFoundError) {
+      throw reply.status(404).send({ error: true, message: error.message });
+    } else {
+      console.error("Error: ", error);
+      throw reply
+        .status(500)
+        .send({ error: true, message: "Internal Server Error" });
+    }
+  }
+};
 
 export const UpdateAddressHandler = async (
   req: FastifyRequest,
