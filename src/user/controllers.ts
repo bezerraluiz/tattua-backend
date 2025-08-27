@@ -213,8 +213,6 @@ export const LoginUserHandler = async (
       .send({
         error: false,
         data: {
-          user: authData.user,
-          session: authData.session,
           access_token: authData.session?.access_token,
           refresh_token: authData.session?.refresh_token,
         },
@@ -258,8 +256,6 @@ export const RefreshTokenHandler = async (
       .send({
         error: false,
         data: {
-          user: authData.user,
-          session: authData.session,
           access_token: authData.session?.access_token,
           refresh_token: authData.session?.refresh_token,
         },
