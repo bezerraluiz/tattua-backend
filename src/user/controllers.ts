@@ -116,7 +116,7 @@ export const CreateUserHandler = async (
 
     if (!address) return;
 
-    return reply.status(201).send({ error: false, data: user.user });
+    return reply.status(201).send({ error: false, data: user.user.id });
   } catch (error) {
     if (error instanceof UserAlreadyExists) {
       console.error("User already exists:", error.message);
