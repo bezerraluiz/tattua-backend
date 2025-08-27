@@ -42,8 +42,8 @@ server.route({
 });
 
 // Routes
-server.register(UserRoutes);
-server.register(AddressRoutes);
+server.register(UserRoutes, { prefix: "/api/v1/users" });
+server.register(AddressRoutes, { prefix: "/api/v1/addresses" });
 
 server.listen({ host: "0.0.0.0", port: 3333 }).then(() => {
   console.debug("Server is running on localhost:3333 🚀");

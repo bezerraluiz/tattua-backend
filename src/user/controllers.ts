@@ -4,6 +4,7 @@ import {
   DeleteUser,
   GetUserByCpfcnpj,
   GetUsers,
+  LoginUser,
   RollbackUserCreation,
   UpdateUser,
 } from "./services";
@@ -17,31 +18,14 @@ import type { CreateUserReqDto } from "./dtos/create-user-req.dto";
 import { UserUpdatingError } from "errors/user-updating.error";
 import { QueryDeleteUserSchema } from "./schemas/delete-user.schema";
 import { supabaseAdmin } from "server";
-import { BodyUpdateUserSchema, QueryUpdateUserSchema } from "./schemas/update-user.schema";
-import { QueryGetUserCpfcnpjSchema } from "./schemas/get-user-cpfcnpj.schema";
+import {
+  BodyUpdateUserSchema,
+  QueryUpdateUserSchema,
+} from "./schemas/update-user.schema";
+import { UserDontExists } from "errors/user-dont-exists.error";
+import { BodyLoginUserSchema } from "./schemas/login-user.schema";
 
-export const GetUserByCpfcnpjHandler = async (
-  req: FastifyRequest,
-  reply: FastifyReply
-) => {
-  try {
-    const { tax_id } = QueryGetUserCpfcnpjSchema.parse(req.query);
-
-    const users = await GetUserByCpfcnpj(tax_id);
-
-    return reply.status(200).send({ error: false, data: users });
-  } catch (error) {
-    if (error instanceof UserNotFoundError) {
-      throw reply.status(404).send({ error: true, message: error.message });
-    } else {
-      console.error("Error: ", error);
-      throw reply
-        .status(500)
-        .send({ error: true, message: "Internal Server Error" });
-    }
-  }
-};
-
+// Admin routes
 export const GetUsersHandler = async (
   req: FastifyRequest,
   reply: FastifyReply
@@ -168,9 +152,9 @@ export const UpdateUserHandler = async (
 
     const updatedUser = await UpdateUser(userUpdate);
 
-    return reply.status(200).send({ 
-      error: false, 
-      data: updatedUser 
+    return reply.status(200).send({
+      error: false,
+      data: updatedUser,
     });
   } catch (error) {
     if (error instanceof UserNotFoundError) {
@@ -195,21 +179,44 @@ export const DeleteUserHandler = async (
   try {
     const { uid } = QueryDeleteUserSchema.parse(req.query);
 
-    if (!uid) {
-      throw new UserNotFoundError("User ID is required for deletion");
-    }
-
     // Delete user
     await DeleteUser(uid);
 
     console.debug(`User ${uid} deleted successfully`);
   } catch (error) {
-    if (error instanceof UserNotFoundError) {
-      console.error("User not found:", error.message);
-      throw reply.status(404).send({ error: true, message: error.message });
+    console.error("Error: ", error);
+    throw reply
+      .status(500)
+      .send({ error: true, message: "Internal Server Error" });
+  }
+};
+
+// Users routes
+export const LoginUserHandler = async (
+  req: FastifyRequest,
+  reply: FastifyReply
+) => {
+  try {
+    const { email, password } = BodyLoginUserSchema.parse(req.body);
+
+    const authData = await LoginUser(email, password);
+
+    return reply.status(200).send({
+      error: false,
+      data: {
+        user: authData.user,
+        session: authData.session,
+        access_token: authData.session?.access_token,
+        refresh_token: authData.session?.refresh_token,
+      },
+    });
+  } catch (error) {
+    if (error instanceof UserDontExists) {
+      console.error("Login failed:", error.message);
+      return reply.status(401).send({ error: true, message: error.message });
     } else {
       console.error("Error: ", error);
-      throw reply
+      return reply
         .status(500)
         .send({ error: true, message: "Internal Server Error" });
     }

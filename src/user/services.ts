@@ -5,6 +5,7 @@ import { User } from "./user.model";
 import type { UpdateUserReqDto } from "./dtos/update-user-req.dto";
 import type { CreateUserReqDto } from "./dtos/create-user-req.dto";
 import { UserUpdatingError } from "errors/user-updating.error";
+import { UserDontExists } from "errors/user-dont-exists.error";
 
 export const GetUsers = async (): Promise<User[]> => {
   const { data, error } = await supabaseAdmin.from("users").select();
@@ -25,6 +26,35 @@ export const GetUserByCpfcnpj = async (tax_id: string) => {
   if (error) throw new Error(error.message);
 
   if (data.length != 0) throw new UserAlreadyExists("User already exists");
+
+  return data;
+};
+
+export const GetUserByEmail = async (email: string) => {
+  const { data, error } = await supabaseAdmin
+    .from("users")
+    .select("*")
+    .eq("email", email);
+
+  if (error) throw new Error(error.message);
+
+  if (!data.length) throw new UserDontExists("Unregistered user");
+
+  return data;
+};
+
+export const LoginUser = async (email: string, password: string) => {
+  const { data, error } = await supabaseAdmin.auth.signInWithPassword({
+    email,
+    password,
+  });
+
+  if (error) {
+    if (error.message.includes("Invalid login credentials")) {
+      throw new UserDontExists("Invalid email or password");
+    }
+    throw new Error(error.message);
+  }
 
   return data;
 };
