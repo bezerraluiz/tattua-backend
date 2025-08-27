@@ -1,5 +1,5 @@
 import { FastifyInstance } from "fastify";
-import { CreateUserHandler, DeleteUserHandler, LoginUserHandler, UpdateUserHandler } from "user/controllers";
+import { CreateUserHandler, DeleteUserHandler, LoginUserHandler, RefreshTokenHandler, UpdateUserHandler } from "user/controllers";
 
 export const UserRoutes = async (server: FastifyInstance) => {
   // Admin routes
@@ -8,4 +8,5 @@ export const UserRoutes = async (server: FastifyInstance) => {
   server.patch("/update", UpdateUserHandler);
   // User routes
   server.post("/login", LoginUserHandler);
+  server.post("/refresh", RefreshTokenHandler);
 };

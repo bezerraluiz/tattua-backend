@@ -5,6 +5,7 @@ import {
   GetUserByCpfcnpj,
   GetUsers,
   LoginUser,
+  RefreshToken,
   RollbackUserCreation,
   UpdateUser,
 } from "./services";
@@ -24,6 +25,7 @@ import {
 } from "./schemas/update-user.schema";
 import { UserDontExists } from "errors/user-dont-exists.error";
 import { BodyLoginUserSchema } from "./schemas/login-user.schema";
+import { BodyRefreshTokenSchema } from "./schemas/refresh-token.schema";
 
 // Admin routes
 export const GetUsersHandler = async (
@@ -201,15 +203,22 @@ export const LoginUserHandler = async (
 
     const authData = await LoginUser(email, password);
 
-    return reply.status(200).send({
-      error: false,
-      data: {
-        user: authData.user,
-        session: authData.session,
-        access_token: authData.session?.access_token,
-        refresh_token: authData.session?.refresh_token,
-      },
-    });
+    return reply
+      .setCookie("access_token", authData.session?.access_token, {
+        httpOnly: true,
+        secure: true,
+        maxAge: 3600, // 1 hour
+      })
+      .status(200)
+      .send({
+        error: false,
+        data: {
+          user: authData.user,
+          session: authData.session,
+          access_token: authData.session?.access_token,
+          refresh_token: authData.session?.refresh_token,
+        },
+      });
   } catch (error) {
     if (error instanceof UserDontExists) {
       console.error("Login failed:", error.message);
@@ -220,5 +229,46 @@ export const LoginUserHandler = async (
         .status(500)
         .send({ error: true, message: "Internal Server Error" });
     }
+  }
+};
+
+export const RefreshTokenHandler = async (
+  req: FastifyRequest,
+  reply: FastifyReply
+) => {
+  try {
+    const { refresh_token } = BodyRefreshTokenSchema.parse(req.body);
+
+    const authData = await RefreshToken(refresh_token);
+
+    if (!authData.session?.access_token) {
+      return reply.status(401).send({
+        error: true,
+        message: "Invalid refresh token",
+      });
+    }
+
+    return reply
+      .setCookie("access_token", authData.session?.access_token, {
+        httpOnly: true,
+        secure: true,
+        maxAge: 3600, // 1 hour
+      })
+      .status(200)
+      .send({
+        error: false,
+        data: {
+          user: authData.user,
+          session: authData.session,
+          access_token: authData.session?.access_token,
+          refresh_token: authData.session?.refresh_token,
+        },
+      });
+  } catch (error) {
+    console.error("Refresh token failed:", error);
+    return reply.status(401).send({ 
+      error: true, 
+      message: "Invalid refresh token" 
+    });
   }
 };

@@ -43,22 +43,6 @@ export const GetUserByEmail = async (email: string) => {
   return data;
 };
 
-export const LoginUser = async (email: string, password: string) => {
-  const { data, error } = await supabaseAdmin.auth.signInWithPassword({
-    email,
-    password,
-  });
-
-  if (error) {
-    if (error.message.includes("Invalid login credentials")) {
-      throw new UserDontExists("Invalid email or password");
-    }
-    throw new Error(error.message);
-  }
-
-  return data;
-};
-
 export const CreateUser = async (user: CreateUserReqDto) => {
   const { data, error } = await supabaseAdmin.auth.signUp({
     email: user.email,
@@ -124,4 +108,32 @@ export const RollbackUserCreation = async (user?: any) => {
       console.error("Failed to rollback user:", rollbackError);
     }
   }
+};
+
+export const LoginUser = async (email: string, password: string) => {
+  const { data, error } = await supabaseAdmin.auth.signInWithPassword({
+    email,
+    password,
+  });
+
+  if (error) {
+    if (error.message.includes("Invalid login credentials")) {
+      throw new UserDontExists("Invalid email or password");
+    }
+    throw new Error(error.message);
+  }
+
+  return data;
+};
+
+export const RefreshToken = async (refreshToken: string) => {
+  const { data, error } = await supabaseAdmin.auth.refreshSession({
+    refresh_token: refreshToken,
+  });
+
+  if (error) {
+    throw new Error(error.message);
+  }
+
+  return data;
 };

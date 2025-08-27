@@ -4,6 +4,7 @@ import dotenv from "dotenv";
 import { createClient } from "@supabase/supabase-js";
 import { UserRoutes } from "routes/user.routes";
 import { AddressRoutes } from "routes/address.routes";
+import cookie from '@fastify/cookie';
 
 // Load environment variables from .env file
 dotenv.config();
@@ -21,6 +22,7 @@ export const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 const server = fastify();
 
 server.register(cors, { origin: true }); // Enable CORS for all origins
+server.register(cookie);
 
 // Route for testing
 server.route({
