@@ -16,9 +16,6 @@ export const SUPABASE_SERVICE_ROLE_KEY: string = process.env.SUPABASE_SERVICE_RO
 // Service client (bypassa RLS) - admin operations
 export const supabaseAdmin = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY)
 
-// Normal client (with RLS) - users operations
-export const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-
 const server = fastify();
 
 server.register(cors, { origin: true }); // Enable CORS for all origins
