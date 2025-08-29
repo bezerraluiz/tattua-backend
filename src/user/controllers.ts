@@ -15,7 +15,7 @@ import { CreateAddress, DeleteAddress } from "address/services";
 import { UserAlreadyExists } from "errors/user-already-exists.error";
 import { AddressCreatingError } from "errors/address-creating.error";
 import { PasswordStrong } from "utils/password-strong";
-import type { CreateUserReqDto } from "./dtos/create-user-req.dto";
+import type { CreateUserReqDto } from "./dto/create-user-req.dto";
 import { UserUpdatingError } from "errors/user-updating.error";
 import { QueryDeleteUserSchema } from "./schemas/delete-user.schema";
 import { supabaseAdmin } from "server";

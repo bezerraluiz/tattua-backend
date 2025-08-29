@@ -2,8 +2,8 @@ import { supabaseAdmin } from "server";
 import { UserNotFoundError } from "errors/user-not-found.error";
 import { UserAlreadyExists } from "errors/user-already-exists.error";
 import { User } from "./user.model";
-import type { UpdateUserReqDto } from "./dtos/update-user-req.dto";
-import type { CreateUserReqDto } from "./dtos/create-user-req.dto";
+import type { UpdateUserReqDto } from "./dto/update-user-req.dto";
+import type { CreateUserReqDto } from "./dto/create-user-req.dto";
 import { UserUpdatingError } from "errors/user-updating.error";
 import { UserDontExists } from "errors/user-dont-exists.error";
 
