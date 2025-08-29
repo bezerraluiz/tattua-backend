@@ -51,6 +51,7 @@ export const CreateUser = async (user: CreateUserReqDto) => {
       data: {
         studio_name: user.studio_name,
         tax_id: user.tax_id,
+        emailRedirectTo: 'http://localhost:5173/login'
       },
     },
   });

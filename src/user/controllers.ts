@@ -184,7 +184,9 @@ export const DeleteUserHandler = async (
     // Delete user
     await DeleteUser(uid);
 
-    console.debug(`User ${uid} deleted successfully`);
+    return reply
+      .status(200)
+      .send({ error: false, message: "User deleted successfully" });
   } catch (error) {
     console.error("Error: ", error);
     throw reply
