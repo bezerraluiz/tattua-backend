@@ -1,7 +1,28 @@
 import { FastifyReply, FastifyRequest } from "fastify";
-import { CreateQuote } from "./services";
-import { CreateQuoteReqDto } from "./dto/create-user-req.dto";
+import { CreateQuote, GetQuotesByUserUid } from "./services";
 import { CreateQuoteSchema } from "./schemas/create-quote.schema";
+import { QuoteNotFoundError } from "errors/quote-not-found.error";
+import { GetQuotesByUserUidSchema } from "./schemas/get-quotes-user-uid.schema";
+
+export const GetQuotesByUserUidHandler = async (
+  req: FastifyRequest,
+  reply: FastifyReply
+) => {
+  try {
+    console.log("[GetQuotesByUserUidHandler] params:", req.query);
+    const { user_uid } = GetQuotesByUserUidSchema.parse(req.query);
+    console.log(`[GetQuotesByUserUidHandler] Buscando quotes para user_uid: ${user_uid}`);
+    const quotes = await GetQuotesByUserUid(user_uid);
+    console.log(`[GetQuotesByUserUidHandler] Quotes encontrados:`, quotes);
+    return reply.status(200).send({ error: false, data: quotes });
+  } catch (error) {
+    console.error("[GetQuotesByUserUidHandler] Erro:", error);
+    if (error instanceof QuoteNotFoundError) {
+      return reply.status(404).send({ error: true, message: error.message });
+    }
+    return reply.status(500).send({ error: true, message: "Internal Server Error" });
+  }
+};
 
 export const CreateQuoteHandler = async (
   req: FastifyRequest,
@@ -11,7 +32,7 @@ export const CreateQuoteHandler = async (
     const body = CreateQuoteSchema.parse(req.body);
 
     const quote = await CreateQuote(body);
- 
+
     return reply.status(201).send({ error: false, data: quote });
   } catch (error) {
     console.error("Error creating quote:", error);
