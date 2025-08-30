@@ -12,5 +12,5 @@ export const CreateQuoteSchema = z.object({
   description: z.string().optional(),
   total: z.number().min(0, "Total é obrigatório"),
   custom_fields: z.record(z.string(), z.any()).optional(),
-  user_id: z.number().int().min(1, "Usuário é obrigatório"),
+  user_uid: z.string().min(1, "Usuário é obrigatório"),
 });

@@ -14,5 +14,5 @@ export interface CreateQuoteReqDto extends Pick<
   | "description"
   | "total"
   | "custom_fields"
-  | "user_id"
+  | "user_uid"
 > {}

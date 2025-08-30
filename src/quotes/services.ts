@@ -2,11 +2,11 @@ import { supabaseAdmin } from "server";
 import type { CreateQuoteReqDto } from "./dto/create-user-req.dto";
 
 export const CreateQuote = async (quote: CreateQuoteReqDto) => {
-  const { user_id, ...fields } = quote;
+  const { user_uid, ...fields } = quote;
   
   const { data, error } = await supabaseAdmin
     .from("budgets")
-    .insert({ ...fields, user_id: user_id })
+    .insert({ ...fields, user_uid: user_uid })
     .select()
     .single();
 

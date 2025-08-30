@@ -1,6 +1,6 @@
 export interface Quote {
   id: string;
-  user_id: number;
+  user_uid: string;
   client_name: string;
   professional_name: string;
   tattoo_size: string;
