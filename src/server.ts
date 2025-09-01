@@ -11,7 +11,6 @@ import { QuoteRoutes } from "routes/quote.routes";
 dotenv.config();
 
 export const SUPABASE_URL: string = process.env.SUPABASE_URL as string;
-export const SUPABASE_ANON_KEY: string = process.env.SUPABASE_ANON_KEY as string;
 export const SUPABASE_SERVICE_ROLE_KEY: string = process.env.SUPABASE_SERVICE_ROLE_KEY as string;
 
 // Service client (bypassa RLS) - admin operations

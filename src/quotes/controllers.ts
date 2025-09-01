@@ -9,14 +9,13 @@ export const GetQuotesByUserUidHandler = async (
   reply: FastifyReply
 ) => {
   try {
-    console.log("[GetQuotesByUserUidHandler] params:", req.query);
     const { user_uid } = GetQuotesByUserUidSchema.parse(req.query);
-    console.log(`[GetQuotesByUserUidHandler] Buscando quotes para user_uid: ${user_uid}`);
+    
     const quotes = await GetQuotesByUserUid(user_uid);
-    console.log(`[GetQuotesByUserUidHandler] Quotes encontrados:`, quotes);
+
     return reply.status(200).send({ error: false, data: quotes });
   } catch (error) {
-    console.error("[GetQuotesByUserUidHandler] Erro:", error);
+    console.error("Error get quotes by user uid:", error);
     if (error instanceof QuoteNotFoundError) {
       return reply.status(404).send({ error: true, message: error.message });
     }
