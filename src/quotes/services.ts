@@ -8,9 +8,13 @@ export const GetQuotesByUserUid = async (user_uid: string) => {
     .select("*")
     .eq("user_uid", user_uid);
 
-  if (error) throw new Error(error.message);
-  
-  if (data.length == 0) throw new QuoteNotFoundError("No quotes found for this user");
+  if (error) {
+    throw new Error(error.message);
+  }
+
+  if (!data || data.length === 0) {
+    throw new QuoteNotFoundError("No quotes found for this user");
+  }
 
   return data;
 };
