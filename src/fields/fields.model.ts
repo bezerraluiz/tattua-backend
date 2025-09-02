@@ -13,6 +13,7 @@ export interface UserFixedFieldValues {
   uid: string;
   user_id: number;
   fixed_field_id: number;
+  custom_name?: string;
   custom_value: number; // ex: R$ 16,00 = 1600
   custom_options?: string[];
   updatedAt: Date;
