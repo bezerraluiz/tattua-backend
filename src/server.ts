@@ -6,6 +6,7 @@ import { UserRoutes } from "routes/user.routes";
 import { AddressRoutes } from "routes/address.routes";
 import cookie from '@fastify/cookie';
 import { QuoteRoutes } from "routes/quote.routes";
+import { FieldRoutes } from "routes/field.routes";
 
 // Load environment variables from .env file
 dotenv.config();
@@ -44,6 +45,7 @@ server.route({
 server.register(UserRoutes, { prefix: "/api/v1/users" });
 server.register(AddressRoutes, { prefix: "/api/v1/addresses" });
 server.register(QuoteRoutes, { prefix: "/api/v1/quotes" });
+server.register(FieldRoutes, { prefix: "/api/v1/fields" });
 
 server.listen({ host: "0.0.0.0", port: 3333 }).then(() => {
   console.debug("Server is running on localhost:3333 🚀");
