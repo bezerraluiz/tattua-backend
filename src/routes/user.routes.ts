@@ -1,7 +1,8 @@
 import { FastifyInstance } from "fastify";
-import { CreateUserHandler, DeleteUserHandler, GetUsersHandler, LoginUserHandler, RefreshTokenHandler, UpdateUserHandler } from "user/controllers";
+import { CreateUserHandler, DeleteUserHandler, GetUsersHandler, LoginUserHandler, RefreshTokenHandler, UpdateUserHandler, GetUserByUidHandler } from "user/controllers";
 
 export const UserRoutes = async (server: FastifyInstance) => {
+  server.get("/user", GetUserByUidHandler);
   server.get("/", GetUsersHandler);
   server.post("/", CreateUserHandler);
   server.delete("/delete", DeleteUserHandler);

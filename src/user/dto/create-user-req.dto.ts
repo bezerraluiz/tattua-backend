@@ -1,6 +1,7 @@
 import { User } from "user/user.model";
 
+
 export interface CreateUserReqDto
-  extends Pick<User, "email" | "studio_name" | "tax_id"> {
+  extends Pick<User, "email" | "studio_name" | "tax_id" | "telephone"> {
   password: string;
 }

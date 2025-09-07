@@ -1,3 +1,25 @@
+import { GetUserByUid } from "./services";
+
+export const GetUserByUidHandler = async (
+  req: FastifyRequest,
+  reply: FastifyReply
+) => {
+  try {
+    const { user_uid } = QueryGetUserUidSchema.parse(req.params);
+
+    if (!user_uid) {
+      return reply.status(400).send({ error: true, message: "UID is required" });
+    }
+    const user = await GetUserByUid(user_uid);
+    if (!user) {
+      return reply.status(404).send({ error: true, message: "User not found" });
+    }
+    return reply.status(200).send({ error: false, data: user });
+  } catch (error) {
+    console.error("Error: ", error);
+    return reply.status(500).send({ error: true, message: "Internal Server Error" });
+  }
+};
 import { FastifyReply, FastifyRequest } from "fastify";
 import {
   CreateUser,
@@ -26,6 +48,7 @@ import {
 import { UserDontExists } from "errors/user-dont-exists.error";
 import { BodyLoginUserSchema } from "./schemas/login-user.schema";
 import { BodyRefreshTokenSchema } from "./schemas/refresh-token.schema";
+import { QueryGetUserUidSchema } from "./schemas/get-user-uid.schema";
 
 // Admin routes
 export const GetUsersHandler = async (
@@ -75,6 +98,7 @@ export const CreateUserHandler = async (
       studio_name: body.studio_name.trim(),
       email: body.email.trim(),
       tax_id: body.tax_id.trim(),
+      telephone: body.telephone ? body.telephone.trim() : "",
       password: body.password.trim(),
     };
 
@@ -151,6 +175,9 @@ export const UpdateUserHandler = async (
     const body = BodyUpdateUserSchema.parse(req.body);
 
     const userUpdate = { uid, ...body };
+    if (body.telephone) {
+      userUpdate.telephone = body.telephone.trim();
+    }
 
     const updatedUser = await UpdateUser(userUpdate);
 

@@ -1,3 +1,17 @@
+
+export const GetUserByUid = async (uid: string): Promise<User | null> => {
+  const { data, error } = await supabaseAdmin
+    .from("users")
+    .select("*")
+    .eq("uid", uid)
+    .single();
+
+  if (error) {
+    if (error.code === "PGRST116") return null; // Not found
+    throw new Error(error.message);
+  }
+  return data as User;
+};
 import { supabaseAdmin } from "server";
 import { UserNotFoundError } from "errors/user-not-found.error";
 import { UserAlreadyExists } from "errors/user-already-exists.error";
@@ -44,6 +58,7 @@ export const GetUserByEmail = async (email: string) => {
 };
 
 export const CreateUser = async (user: CreateUserReqDto) => {
+
   const { data, error } = await supabaseAdmin.auth.signUp({
     email: user.email,
     password: user.password,
@@ -51,6 +66,7 @@ export const CreateUser = async (user: CreateUserReqDto) => {
       data: {
         studio_name: user.studio_name,
         tax_id: user.tax_id,
+        telephone: user.telephone,
         emailRedirectTo: 'http://localhost:5173/login'
       },
     },
@@ -74,6 +90,7 @@ export const UpdateUser = async (user: UpdateUserReqDto) => {
       password: user.password,
       user_metadata: {
         studio_name: user.studio_name,
+        telephone: user.telephone,
       },
     }
   );

@@ -4,6 +4,7 @@ export const BodyCreateUserSchema = z.object({
   studio_name: z.string().min(1, "Nome do estúdio é obrigatório"),
   email: z.string().email("E-mail inválido").min(1, "E-mail é obrigatório"),
   tax_id: z.string().min(1, "CPF/CNPJ é obrigatório"),
+  telephone: z.string().min(8, "Telefone é obrigatório"),
   password: z.string().min(8, "Senha deve ter pelo menos 8 caracteres"),
   country: z.string().min(1, "País é obrigatório"),
   street: z.string().min(1, "Rua é obrigatória"),
