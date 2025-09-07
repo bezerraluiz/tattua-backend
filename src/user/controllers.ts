@@ -11,13 +11,16 @@ export const GetUserByUidHandler = async (
     if (!user_uid) {
       return reply.status(400).send({ error: true, message: "UID is required" });
     }
+    
     const user = await GetUserByUid(user_uid);
+    
     if (!user) {
       return reply.status(404).send({ error: true, message: "User not found" });
     }
+    
     return reply.status(200).send({ error: false, data: user });
   } catch (error) {
-    console.error("Error: ", error);
+    console.error("Error in GetUserByUidHandler:", error);
     return reply.status(500).send({ error: true, message: "Internal Server Error" });
   }
 };

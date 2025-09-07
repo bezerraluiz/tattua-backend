@@ -1,16 +1,69 @@
 
 export const GetUserByUid = async (uid: string): Promise<User | null> => {
-  const { data, error } = await supabaseAdmin
+  console.log("🔍 GetUserByUid service called with uid:", uid);
+  
+  // Primeiro, vamos verificar se o usuário existe na tabela auth.users
+  const { data: authUser, error: authError } = await supabaseAdmin.auth.admin.getUserById(uid);
+  console.log("🔐 Auth user check:");
+  console.log("  - Auth Data:", authUser?.user?.id);
+  console.log("  - Auth Error:", authError);
+  
+  // Vamos tentar diferentes formas de consulta
+  console.log("🔍 Trying different query methods...");
+  
+  // Método 1: Consulta simples
+  const { data: data1, error: error1 } = await supabaseAdmin
+    .from("users")
+    .select("*")
+    .eq("uid", uid);
+  
+  console.log("📊 Method 1 (select all):");
+  console.log("  - Data:", data1);
+  console.log("  - Error:", error1);
+  console.log("  - Count:", data1?.length);
+  
+  if (data1 && data1.length > 0) {
+    console.log("✅ Found user with method 1");
+    return data1[0] as User;
+  }
+  
+  // Método 2: Consulta com .single() (original)
+  const { data: data2, error: error2 } = await supabaseAdmin
     .from("users")
     .select("*")
     .eq("uid", uid)
     .single();
 
-  if (error) {
-    if (error.code === "PGRST116") return null; // Not found
-    throw new Error(error.message);
+  console.log("� Method 2 (single):");
+  console.log("  - Data:", data2);
+  console.log("  - Error:", error2);
+
+  if (data2) {
+    console.log("✅ Found user with method 2");
+    return data2 as User;
   }
-  return data as User;
+  
+  // Método 3: Consulta por ID (como teste)
+  const { data: data3, error: error3 } = await supabaseAdmin
+    .from("users")
+    .select("*")
+    .eq("id", 21);
+  
+  console.log("📊 Method 3 (by id=21):");
+  console.log("  - Data:", data3);
+  console.log("  - Error:", error3);
+
+  if (error2) {
+    if (error2.code === "PGRST116") {
+      console.log("⚠️  User not found in public.users table (PGRST116)");
+      return null; // Not found
+    }
+    console.log("❌ Supabase error:", error2.message);
+    throw new Error(error2.message);
+  }
+  
+  console.log("❌ User not found with any method");
+  return null;
 };
 import { supabaseAdmin } from "server";
 import { UserNotFoundError } from "errors/user-not-found.error";
