@@ -1,12 +1,13 @@
-import type { FastifyReply, FastifyRequest } from "fastify";
+import type { FastifyReply } from "fastify";
 import { GetAddresses, GetAddressByUserId, UpdateAddress } from "./services";
 import { AddressNotFoundError } from "errors/address-not-found.error";
 import { AddressUpdatingError } from "errors/address-updating.error";
 import { BodyUpdateAddressSchema, QueryUpdateAddressSchema } from "./schemas/update-user.schema";
 import { QueryGetAddressByUserIdSchema } from "./schemas/get-address-by-user-id.schema";
+import { AuthenticatedRequest } from "../middleware/auth.middleware";
 
 export const GetAddressByUserIdHandler = async (
-  req: FastifyRequest,
+  req: AuthenticatedRequest,
   reply: FastifyReply
 ) => {
   try {
@@ -32,7 +33,7 @@ export const GetAddressByUserIdHandler = async (
 };
 
 export const UpdateAddressHandler = async (
-  req: FastifyRequest,
+  req: AuthenticatedRequest,
   reply: FastifyReply
 ) => {
   try {

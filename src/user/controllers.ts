@@ -1,11 +1,12 @@
 import { GetUserByUid } from "./services";
+import { QueryGetUserUidSchema } from "./schemas/get-user-uid.schema";
 
 export const GetUserByUidHandler = async (
   req: FastifyRequest,
   reply: FastifyReply
 ) => {
   try {
-    const { user_uid } = QueryGetUserUidSchema.parse(req.params);
+    const { user_uid } = QueryGetUserUidSchema.parse(req.query);
 
     if (!user_uid) {
       return reply.status(400).send({ error: true, message: "UID is required" });
@@ -48,7 +49,6 @@ import {
 import { UserDontExists } from "errors/user-dont-exists.error";
 import { BodyLoginUserSchema } from "./schemas/login-user.schema";
 import { BodyRefreshTokenSchema } from "./schemas/refresh-token.schema";
-import { QueryGetUserUidSchema } from "./schemas/get-user-uid.schema";
 
 // Admin routes
 export const GetUsersHandler = async (
