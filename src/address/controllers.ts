@@ -2,7 +2,7 @@ import type { FastifyReply } from "fastify";
 import { GetAddresses, GetAddressByUserId, UpdateAddress } from "./services";
 import { AddressNotFoundError } from "errors/address-not-found.error";
 import { AddressUpdatingError } from "errors/address-updating.error";
-import { BodyUpdateAddressSchema, QueryUpdateAddressSchema } from "./schemas/update-user.schema";
+import { BodyUpdateAddressSchema, QueryUpdateAddressSchema } from "./schemas/update-address.schema";
 import { QueryGetAddressByUserIdSchema } from "./schemas/get-address-by-user-id.schema";
 import { AuthenticatedRequest } from "../middleware/auth.middleware";
 

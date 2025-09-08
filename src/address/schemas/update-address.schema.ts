@@ -11,5 +11,5 @@ export const BodyUpdateAddressSchema = z.object({
 });
 
 export const QueryUpdateAddressSchema = z.object({
-  user_id: z.number().int("ID do usuário deve ser um número inteiro"),
+  user_id: z.string().transform((val) => parseInt(val, 10)).pipe(z.number().int("ID do usuário deve ser um número inteiro")),
 });

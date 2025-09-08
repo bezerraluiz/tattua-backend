@@ -24,7 +24,12 @@ export const supabaseAdmin = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KE
 
 const server = fastify();
 
-server.register(cors, { origin: true }); // Enable CORS for all origins
+server.register(cors, {
+  origin: true,
+  credentials: true,
+  methods: ['GET', 'PUT', 'POST', 'DELETE', 'PATCH', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With']
+}); // Enable CORS for all origins
 server.register(cookie);
 
 // Route for testing

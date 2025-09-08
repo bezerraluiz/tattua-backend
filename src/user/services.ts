@@ -140,7 +140,6 @@ export const UpdateUser = async (user: UpdateUserReqDto) => {
     user.uid,
     {
       email: user.email,
-      password: user.password,
       user_metadata: {
         studio_name: user.studio_name,
         telephone: user.telephone,
