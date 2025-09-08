@@ -21,10 +21,8 @@ export const GetAddressByUserIdHandler = async (
     });
   } catch (error) {
     if (error instanceof AddressNotFoundError) {
-      console.error("Address not found:", error.message);
       return reply.status(404).send({ error: true, message: error.message });
     } else {
-      console.error("Error: ", error);
       return reply
         .status(500)
         .send({ error: true, message: "Internal Server Error" });
@@ -50,13 +48,10 @@ export const UpdateAddressHandler = async (
     });
   } catch (error) {
     if (error instanceof AddressNotFoundError) {
-      console.error("User not found:", error.message);
       return reply.status(404).send({ error: true, message: error.message });
     } else if (error instanceof AddressUpdatingError) {
-      console.error("User update failed:", error.message);
       return reply.status(400).send({ error: true, message: error.message });
     } else {
-      console.error("Error: ", error);
       return reply
         .status(500)
         .send({ error: true, message: "Internal Server Error" });

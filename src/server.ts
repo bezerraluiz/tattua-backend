@@ -58,5 +58,5 @@ server.register(QuoteRoutes, { prefix: "/api/v1/quotes" });
 server.register(FieldRoutes, { prefix: "/api/v1/fields" });
 
 server.listen({ host: "0.0.0.0", port: 3333 }).then(() => {
-  console.debug("Server is running on localhost:3333 🚀");
+  // Server started successfully
 });

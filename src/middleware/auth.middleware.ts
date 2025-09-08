@@ -35,7 +35,6 @@ export const authMiddleware = async (
     // Anexar usuário à requisição
     request.user = user;
   } catch (error) {
-    console.error("Auth middleware error:", error);
     return reply.status(401).send({ 
       error: true, 
       message: "Erro de autenticação" 

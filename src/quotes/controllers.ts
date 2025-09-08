@@ -15,7 +15,6 @@ export const GetQuotesByUserUidHandler = async (
 
     return reply.status(200).send({ error: false, data: quotes });
   } catch (error) {
-    console.error("Error get quotes by user uid:", error);
     if (error instanceof QuoteNotFoundError) {
       return reply.status(404).send({ error: true, message: error.message });
     }
@@ -34,7 +33,6 @@ export const CreateQuoteHandler = async (
 
     return reply.status(201).send({ error: false, data: quote });
   } catch (error) {
-    console.error("Error creating quote:", error);
     return reply.status(400).send({ error: true, message: (error as Error).message });
   }
 };

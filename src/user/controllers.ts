@@ -20,7 +20,6 @@ export const GetUserByUidHandler = async (
     
     return reply.status(200).send({ error: false, data: user });
   } catch (error) {
-    console.error("Error in GetUserByUidHandler:", error);
     return reply.status(500).send({ error: true, message: "Internal Server Error" });
   }
 };
@@ -66,7 +65,6 @@ export const GetUsersHandler = async (
     if (error instanceof UserNotFoundError) {
       throw reply.status(404).send({ error: true, message: error.message });
     } else {
-      console.error("Error: ", error);
       throw reply
         .status(500)
         .send({ error: true, message: "Internal Server Error" });
@@ -108,8 +106,6 @@ export const CreateUserHandler = async (
     // Insert user in database
     user = await CreateUser(userBody);
 
-    console.debug("User created:", user);
-
     if (!user.user)
       throw reply
         .status(400)
@@ -146,21 +142,16 @@ export const CreateUserHandler = async (
     return reply.status(201).send({ error: false, data: user.user.id });
   } catch (error) {
     if (error instanceof UserAlreadyExists) {
-      console.error("User already exists:", error.message);
       throw reply.status(409).send({ error: true, message: error.message });
     } else if (error instanceof AddressCreatingError) {
-      console.error("Address creation failed:", error.message);
       await RollbackUserCreation(user);
       throw reply.status(400).send({ error: true, message: error.message });
     } else if (error instanceof UserNotFoundError) {
-      console.error("User not found:", error.message);
       throw reply.status(404).send({ error: true, message: error.message });
     } else if (error instanceof UserUpdatingError) {
-      console.error("User update failed:", error.message);
       await RollbackUserCreation(user);
       throw reply.status(404).send({ error: true, message: error.message });
     } else {
-      console.error("Error: ", error);
       await RollbackUserCreation(user);
       throw reply
         .status(500)
@@ -190,13 +181,10 @@ export const UpdateUserHandler = async (
     });
   } catch (error) {
     if (error instanceof UserNotFoundError) {
-      console.error("User not found:", error.message);
       return reply.status(404).send({ error: true, message: error.message });
     } else if (error instanceof UserUpdatingError) {
-      console.error("User update failed:", error.message);
       return reply.status(400).send({ error: true, message: error.message });
     } else {
-      console.error("Error: ", error);
       return reply
         .status(500)
         .send({ error: true, message: "Internal Server Error" });
@@ -218,7 +206,6 @@ export const DeleteUserHandler = async (
       .status(200)
       .send({ error: false, message: "User deleted successfully" });
   } catch (error) {
-    console.error("Error: ", error);
     throw reply
       .status(500)
       .send({ error: true, message: "Internal Server Error" });
@@ -251,10 +238,8 @@ export const LoginUserHandler = async (
       });
   } catch (error) {
     if (error instanceof UserDontExists) {
-      console.error("Login failed:", error.message);
       return reply.status(401).send({ error: true, message: error.message });
     } else {
-      console.error("Error: ", error);
       return reply
         .status(500)
         .send({ error: true, message: "Internal Server Error" });
@@ -293,7 +278,6 @@ export const RefreshTokenHandler = async (
         },
       });
   } catch (error) {
-    console.error("Refresh token failed:", error);
     return reply.status(401).send({ 
       error: true, 
       message: "Invalid refresh token" 

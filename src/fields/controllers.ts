@@ -20,12 +20,7 @@ export const CreateUserFixedFieldValuesHandler = async (
       }
     }
 
-    console.log("Body recebido:", JSON.stringify(bodyData, null, 2));
-    console.log("Tipo do bodyData:", typeof bodyData);
-
     const body = BodyCreateUserCustomValuesSchema.parse(bodyData);
-
-    console.log("Body parseado:", JSON.stringify(body, null, 2));
 
     // Buscar o user_id baseado no user_uid
     const { data: userData, error: userError } = await supabaseAdmin
@@ -58,10 +53,7 @@ export const CreateUserFixedFieldValuesHandler = async (
       message: "Valores de campos fixos criados com sucesso"
     });
   } catch (error: any) {
-    console.error("Error creating user fixed field values: ", error);
-    
     if (error.name === 'ZodError') {
-      console.log("Validation errors:", JSON.stringify(error.errors, null, 2));
       return reply.status(400).send({
         error: true,
         message: "Dados de entrada inválidos",
