@@ -1,5 +1,5 @@
 import { FastifyInstance } from "fastify";
-import { CreateUserFixedFieldValuesHandler } from "fields/controllers";
+import { CreateUserFixedFieldValuesHandler, GetFieldsByUserIdHandler } from "fields/controllers";
 import { authMiddleware } from "../middleware/auth.middleware";
 
 export const FieldRoutes = async (server: FastifyInstance) => {
@@ -7,4 +7,5 @@ export const FieldRoutes = async (server: FastifyInstance) => {
   server.addHook('preHandler', authMiddleware);
   
   server.post("/", CreateUserFixedFieldValuesHandler);
+  server.get("/user", GetFieldsByUserIdHandler);
 };

@@ -1,0 +1,300 @@
+###
+### Tattua Backend API Tests
+### 
+### REST Client file to test all backend routes
+### Make sure to replace {token}, {user_uid}, {user_id} with actual values
+###
+
+@baseUrl = http://localhost:3333
+@contentType = application/json
+
+### Variables (Replace with actual values)
+@token = YOUR_JWT_TOKEN_HERE
+@userUid = YOUR_USER_UID_HERE
+@userId = 1
+
+###############################################################################
+### HEALTH CHECK
+###############################################################################
+
+### Test server health
+GET {{baseUrl}}/
+
+###############################################################################
+### USER ROUTES (/api/v1/users)
+###############################################################################
+
+### 1. Register User (Public)
+POST {{baseUrl}}/api/v1/users/register
+Content-Type: {{contentType}}
+
+{
+  "studio_name": "Studio Test",
+  "email": "test@example.com",
+  "tax_id": "12345678901",
+  "telephone": "11987654321",
+  "password": "password123",
+  "country": "Brasil",
+  "street": "Rua Teste, 123",
+  "number": "123",
+  "complement": "Apto 45",
+  "city": "São Paulo",
+  "state": "SP",
+  "zip_code": "01234-567"
+}
+
+### 2. Login User (Public)
+POST {{baseUrl}}/api/v1/users/login
+Content-Type: {{contentType}}
+
+{
+  "email": "test@example.com",
+  "password": "password123"
+}
+
+### 3. Refresh Token (Public)
+POST {{baseUrl}}/api/v1/users/refresh
+Content-Type: {{contentType}}
+
+{
+  "refresh_token": "YOUR_REFRESH_TOKEN_HERE"
+}
+
+### 4. Get Current User (Protected)
+GET {{baseUrl}}/api/v1/users/
+Authorization: Bearer {{token}}
+
+### 5. Get All Users (Protected)
+GET {{baseUrl}}/api/v1/users/all
+Authorization: Bearer {{token}}
+
+### 6. Create User (Protected - alternative route)
+POST {{baseUrl}}/api/v1/users/
+Authorization: Bearer {{token}}
+Content-Type: {{contentType}}
+
+{
+  "studio_name": "Another Studio",
+  "email": "another@example.com",
+  "tax_id": "98765432109",
+  "telephone": "11123456789",
+  "password": "password456"
+}
+
+### 7. Update User (Protected)
+PATCH {{baseUrl}}/api/v1/users/update
+Authorization: Bearer {{token}}
+Content-Type: {{contentType}}
+
+{
+  "studio_name": "Updated Studio Name",
+  "telephone": "11999888777"
+}
+
+### 8. Delete User (Protected)
+DELETE {{baseUrl}}/api/v1/users/delete
+Authorization: Bearer {{token}}
+
+###############################################################################
+### ADDRESS ROUTES (/api/v1/addresses)
+###############################################################################
+
+### 1. Get Address by User ID (Protected)
+GET {{baseUrl}}/api/v1/addresses/user
+Authorization: Bearer {{token}}
+
+### 2. Update Address (Protected)
+PATCH {{baseUrl}}/api/v1/addresses/update
+Authorization: Bearer {{token}}
+Content-Type: {{contentType}}
+
+{
+  "country": "Brasil",
+  "street": "Nova Rua, 456",
+  "number": "456",
+  "complement": "Casa",
+  "city": "Rio de Janeiro",
+  "state": "RJ",
+  "zip_code": "20000-000"
+}
+
+###############################################################################
+### QUOTE ROUTES (/api/v1/quotes)
+###############################################################################
+
+### 1. Create Quote (Protected)
+POST {{baseUrl}}/api/v1/quotes/
+Authorization: Bearer {{token}}
+Content-Type: {{contentType}}
+
+{
+  "user_uid": "{{userUid}}",
+  "title": "Tatuagem Teste",
+  "description": "Uma tatuagem de teste muito legal",
+  "price": 15000,
+  "status": "pending"
+}
+
+### 2. Get Quotes by User UID (Protected)
+GET {{baseUrl}}/api/v1/quotes/user
+Authorization: Bearer {{token}}
+
+###############################################################################
+### FIELD ROUTES (/api/v1/fields)
+###############################################################################
+
+### 1. Create User Fixed Field Values (Protected)
+POST {{baseUrl}}/api/v1/fields/
+Authorization: Bearer {{token}}
+Content-Type: {{contentType}}
+
+{
+  "user_uid": "{{userUid}}",
+  "fixed_field_id": 1,
+  "custom_name": "Campo Personalizado",
+  "custom_value": 2500,
+  "custom_options": {
+    "opcao1": "valor1",
+    "opcao2": "valor2"
+  }
+}
+
+### 2. Get Fields by User ID (Protected)
+GET {{baseUrl}}/api/v1/fields/user
+Authorization: Bearer {{token}}
+
+###############################################################################
+### TEST SCENARIOS
+###############################################################################
+
+### Complete User Flow Test
+### 1. First register a new user
+POST {{baseUrl}}/api/v1/users/register
+Content-Type: {{contentType}}
+
+{
+  "studio_name": "Flow Test Studio",
+  "email": "flowtest@example.com",
+  "tax_id": "11122233344",
+  "telephone": "11555444333",
+  "password": "flowtest123",
+  "country": "Brasil",
+  "street": "Avenida Flow, 789",
+  "number": "789",
+  "complement": "Sala 10",
+  "city": "Belo Horizonte",
+  "state": "MG",
+  "zip_code": "30000-000"
+}
+
+### 2. Login with the new user
+POST {{baseUrl}}/api/v1/users/login
+Content-Type: {{contentType}}
+
+{
+  "email": "flowtest@example.com",
+  "password": "flowtest123"
+}
+
+### 3. After login, use the token to access protected routes
+### Example: Get current user info
+# GET {{baseUrl}}/api/v1/users/
+# Authorization: Bearer TOKEN_FROM_STEP_2
+
+### 4. Create a quote
+# POST {{baseUrl}}/api/v1/quotes/
+# Authorization: Bearer TOKEN_FROM_STEP_2
+# Content-Type: {{contentType}}
+# 
+# {
+#   "user_uid": "USER_UID_FROM_STEP_2",
+#   "title": "Test Quote",
+#   "description": "A test quote for flow testing",
+#   "price": 10000,
+#   "status": "pending"
+# }
+
+###############################################################################
+### ERROR TESTING
+###############################################################################
+
+### Test with invalid credentials
+POST {{baseUrl}}/api/v1/users/login
+Content-Type: {{contentType}}
+
+{
+  "email": "invalid@example.com",
+  "password": "wrongpassword"
+}
+
+### Test protected route without token
+GET {{baseUrl}}/api/v1/users/
+
+### Test with invalid token
+GET {{baseUrl}}/api/v1/users/
+Authorization: Bearer invalid_token_here
+
+### Test with malformed JSON
+POST {{baseUrl}}/api/v1/users/register
+Content-Type: {{contentType}}
+
+{
+  "studio_name": "Test Studio"
+  "email": "test@example.com" // Missing comma - invalid JSON
+}
+
+### Test with missing required fields
+POST {{baseUrl}}/api/v1/users/register
+Content-Type: {{contentType}}
+
+{
+  "studio_name": "Test Studio"
+  // Missing other required fields
+}
+
+###############################################################################
+### PERFORMANCE TESTING
+###############################################################################
+
+### Test multiple requests to check server stability
+### You can run these multiple times
+
+### Quick health checks
+GET {{baseUrl}}/
+
+###
+GET {{baseUrl}}/
+
+###
+GET {{baseUrl}}/
+
+###############################################################################
+### NOTES
+###############################################################################
+
+###
+### Instructions for use:
+### 
+### 1. Install the REST Client extension in VS Code
+### 2. Replace the variables at the top with actual values:
+###    - @token: JWT token received from login
+###    - @userUid: User UID from login response
+###    - @userId: Numeric user ID
+### 
+### 3. Start your server on localhost:3333
+### 4. Click "Send Request" above each request to test
+### 
+### 5. For the complete flow test:
+###    a. Run the register request
+###    b. Run the login request
+###    c. Copy the token from login response
+###    d. Uncomment and update the protected route tests
+### 
+### 6. Check the Response tab for results
+### 7. Look for status codes:
+###    - 200/201: Success
+###    - 400: Bad Request (invalid data)
+###    - 401: Unauthorized (missing/invalid token)
+###    - 404: Not Found
+###    - 500: Server Error
+###

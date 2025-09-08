@@ -1,6 +1,7 @@
 import { FastifyReply, FastifyRequest } from "fastify";
-import { CreateUserFixedFieldValues } from "./services";
+import { CreateUserFixedFieldValues, GetFieldsByUserId } from "./services";
 import { BodyCreateUserCustomValuesSchema } from "./schemas/create-user-custom-values.schema";
+import { QueryGetFieldsByUserIdSchema } from "./schemas/get-fields-by-user-id.schema";
 import { supabaseAdmin } from "server";
 
 export const CreateUserFixedFieldValuesHandler = async (
@@ -57,6 +58,36 @@ export const CreateUserFixedFieldValuesHandler = async (
       return reply.status(400).send({
         error: true,
         message: "Dados de entrada inválidos",
+        details: error.errors
+      });
+    }
+    
+    return reply.status(500).send({
+      error: true,
+      message: "Erro interno do servidor"
+    });
+  }
+};
+
+export const GetFieldsByUserIdHandler = async (
+  req: FastifyRequest,
+  reply: FastifyReply
+) => {
+  try {
+    const params = QueryGetFieldsByUserIdSchema.parse(req.params);
+
+    const userFixedFieldValues = await GetFieldsByUserId(params.user_id);
+
+    return reply.status(200).send({
+      error: false,
+      data: userFixedFieldValues,
+      message: "Campos do usuário recuperados com sucesso"
+    });
+  } catch (error: any) {
+    if (error.name === 'ZodError') {
+      return reply.status(400).send({
+        error: true,
+        message: "Parâmetros inválidos",
         details: error.errors
       });
     }
